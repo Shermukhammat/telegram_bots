@@ -1,43 +1,73 @@
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-from telegram import ReplyKeyboardMarkup, KeyboardButton, BotCommand
-from googletrans import Translator
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackQueryHandler
+from telegram import ReplyKeyboardMarkup, KeyboardButton, BotCommand, InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
 from database import Bot_database
+from media import Message_media, CONTEXT
 """
-v.2.0.0
+v.3.0.0
 """
 API_TOKEN = '6082856375:AAH8nuCVOpIRRnVkaHyXdaSM9TzLiwjlKh0'
-translator = Translator()
-RAML = []
+
+RAM_lis = []
+RAM_dic = {}
+
+def capital_letter(word):
+	word = word.capitalize()
+	if len(word) > 3:
+		if word[1] == 'h':
+			return word[0] + 'H' + word[2:]
+	return word
+
+
+commands = [
+	BotCommand(command = "start", description = "Botni ishga tushurish."),
+	BotCommand(command = "restart", description = "Botni qayat ishga tushurish."),
+	BotCommand(command = "info", description = "Bot statistikasni olish"),
+	BotCommand(command = "help", description = "Botni ishlatish bo'ycha yordam")
+	]
+
+head_menu_buttons = [
+	[KeyboardButton(text = "uzb-en mode 🇺🇿🔄🇬🇧"), 
+	KeyboardButton(text = "uzb-ru mode 🇺🇿🔄🇷🇺"), 
+	KeyboardButton(text = "🛡 Oxford Definition")],
+	[KeyboardButton(text = "Aloqa 📲"), KeyboardButton(text = "⚙️ Sozlamalar")]]
+
+# Chose lang Inline Buttons
+lang_inbuttons = [
+	InlineKeyboardButton(text = "🇺🇿 o'zbekcha", callback_data = "set_uz"),
+	InlineKeyboardButton(text = "🇷🇺 Ruscha", callback_data = "set_ru"),
+	InlineKeyboardButton(text = "🇬🇧 Inglizcha", callback_data = "set_en")]
+
+registir_inbutton = [InlineKeyboardButton(text = "📝 ro'yxatdan o'tish", callback_data = "add_user")]
 
 database = Bot_database("test.db")
-database.creat_user_table("users")
+database.creat_tables('users', 'loacated_menu')
+
+message_media = Message_media()
 
 defolt_lang = "en"
 
-menu_buttons = [[KeyboardButton(text = "uzb-en mode 🇺🇿🔄🇬🇧"), KeyboardButton(text = "uzb-ru mode 🇺🇿🔄🇷🇺"), KeyboardButton(text = "🛡 Oxford Definition")],
-	[KeyboardButton(text = "Aloqa 📲"), KeyboardButton(text = "⚙️ Sozlamalar")]]
 
 def star(update, context):
-
-	commands = [
-		BotCommand(command = "start", description = "Botni ishga tushurish."),
-		BotCommand(command = "restart", description = "Botni qayat ishga tushurish."),
-		BotCommand(command = "info", description = "Bot statistikasni olish"),
-		BotCommand(command = "help", description = "Botni ishlatish bo'ycha yordam")
-		]
-
-	update.message.reply_text(
-		text = "Assalomu alykum xush kelibsiz!\nMen TarjimonRobotman!",
-		reply_markup = ReplyKeyboardMarkup(menu_buttons, resize_keyboard = True, one_time_keyboard = True))
-
-def translatorf(message, en_ru):
-	lang = translator.detect(message).lang
-	if lang == en_ru:
-		return translator.translate(message, "uz").text
-	elif lang == 'uz':
-		return  translator.translate(message, en_ru).text
+	user_id = update.message.chat.id
+	print(user_id)
+	if database.available_user(user_id):
+		pass 
 	else:
-		return "Afsuz bu so'zni tarjima qila olmadim :("
+		if user_id in  RAM_lis:
+			update.message.reply_photo(
+				photo = open('photos/chose_lang.png', 'rb'),
+				caption = CONTEXT['which_lang'][RAM_dic[user_id]['lang']],
+				reply_markup = InlineKeyboardMarkup([message_media.get_inline_lang(lang = 'en')]))
+
+		else:
+			RAM_lis.append(user_id)
+			update.message.reply_photo(
+				photo = open('photos/chose_lang.png', 'rb'),
+				caption = f"🇺🇿 Sizga qaysi til qulay?\n🇬🇧 Which language is the best for you?\n🇷🇺 Какой язык вам удобен?",
+				reply_markup = InlineKeyboardMarkup([message_media.get_inline_lang(lang = 'en')]))
+
+
+
 
 def lang_mode_hendler(update): 
 	message = update.message.text
@@ -56,25 +86,29 @@ def lang_mode_hendler(update):
 
 def core_function(update, context):
 	user_id = update.message.chat.id
-	if database.available_user(update):
-		message = update.message.text
-		if message == "uzb-en mode 🇺🇿🔄🇬🇧":
-			database.set_user_action(user_id, "en")
-			update.message.reply_text("O'zbekch Inglizcha tartibi yoqildi.")
-		elif message == "uzb-ru mode 🇺🇿🔄🇷🇺":
-			database.set_user_action(user_id, "ru")
-			update.message.reply_text("O'zbekch Ruscha tartibi yoqildi.")
-		elif message == "🛡 Oxford Definition":
-			database.set_user_action(user_id, "def")
-			update.message.reply_text("Oxford Definition tartibi yoqildi.")
-		elif message == "Aloqa 📲":
-			buttons = [[KeyboardButton(text = "📬 SHikoyat va takliflar uchun"), KeyboardButton(text = "📌 Reklama berish")],
-				[KeyboardButton(text = "⬅️ orqaga ")]]
-			update.message.reply_text(text = "Aloqa bo'lmi:", reply_markup = ReplyKeyboardMarkup(buttons, resize_keyboard = True, one_time_keyboard = True))
+	message = update.message.text
+	buttons = ["uzb-en mode 🇺🇿🔄🇬🇧", "uzb-ru mode 🇺🇿🔄🇷🇺", "🛡 Oxford Definition", "Aloqa 📲", "⚙️ Sozlamalar"]
+	if database.available_user(user_id):
+		pass
+		# if :
+		# 	pass
+		# if message == "uzb-en mode 🇺🇿🔄🇬🇧":
+		# 	database.set_user_action(user_id, "en")
+		# 	update.message.reply_text("O'zbekch Inglizcha tartibi yoqildi.")
+		# elif message == "uzb-ru mode 🇺🇿🔄🇷🇺":
+		# 	database.set_user_action(user_id, "ru")
+		# 	update.message.reply_text("O'zbekch Ruscha tartibi yoqildi.")
+		# elif message == "🛡 Oxford Definition":
+		# 	database.set_user_action(user_id, "def")
+		# 	update.message.reply_text("Oxford Definition tartibi yoqildi.")
+		# if message == "Aloqa 📲":
+		# 	buttons = [[KeyboardButton(text = "📬 SHikoyat va takliflar uchun"), KeyboardButton(text = "📌 Reklama berish")],
+		# 		[KeyboardButton(text = "⬅️ orqaga ")]]
+		# 	update.message.reply_text(text = "Aloqa bo'lmi:", reply_markup = ReplyKeyboardMarkup(buttons, resize_keyboard = True, one_time_keyboard = True))
 
-		elif message == "⬅️ orqaga":
-			update.message.reply_text(text = "Bosh menu:", 
-				reply_markup = ReplyKeyboardMarkup(menu_buttons, resize_keyboard = True, one_time_keyboard = True))
+		# elif message == "⬅️ orqaga":
+		# 	update.message.reply_text(text = "Bosh menu:", 
+		# 		reply_markup = ReplyKeyboardMarkup(menu_buttons, resize_keyboard = True, one_time_keyboard = True))
 
 
 		# action = database.get_user_action(user_id)
@@ -82,16 +116,52 @@ def core_function(update, context):
 		# update.message.reply_text(f"Your action is {action}.")
 
 	else:
-		if user_id not in RAML:
-			update.message.reply_text("Siz ro'yxatdan o'tmagansiz! Iltimos ro'yxatdan o'tish uchun ismingzni kiriting!")
-			RAML.append(user_id)
-		else:
-			username = update.message.text
-			database.add_user(update, username = username)
-			update.message.reply_text(f"{username} siz ro'yxatga olindingiz!")
+		if user_id not in RAM_lis or message in buttons:
+			update.message.reply_text("Siz ro'yxatdan o'tmagansiz! Iltimos ro'yxatdan o'tish uchun ismingzni kiriting:")
+			RAM_lis.append(user_id)
+			RAM_dic[user_id] = {'count' : 0}
+		elif message not in buttons:
+			if RAM_dic[user_id]['count'] == 0:
+				RAM_dic[user_id]['name'] = capital_letter(message)
+				RAM_dic[user_id]['count'] += 1
+
+				update.message.reply_text(f"Yaxshi {capital_letter(message)}, agar ismingzni xato yuborgan bo'lsangiz ismingizni qaytadan yuborishingiz mumkun! End esa o'zingizga qulay tilni tanlang.",
+					reply_markup = InlineKeyboardMarkup([lang_inbuttons]))
+				
+			else:
+				update.message.reply_text(f"Ismingiz {capital_letter(message)} o'zgartirildi! End esa o'zingizga qulay tilni tanlang.",
+					reply_markup = InlineKeyboardMarkup([lang_inbuttons]))
 
 
+def add_user(user_id, lang):
+	if RAM_dic.get(user_id):
+		RAM_dic[user_id]['lang'] = lang
+		RAM_dic[user_id]['edit_count'] += 1
+	else:
+		RAM_dic[user_id] = {'lang' : lang, 'edit_count' : 0}
 
+def core_inline(update, context):
+	user_id = update.callback_query.message.chat.id
+	query = update.callback_query
+	if user_id in RAM_lis:
+		# print(query.data)
+		if query.data in ["set_uz", "set_ru", "set_en"]:
+			lang = query.data[-2:] #get lang
+			add_user(user_id, lang)
+			# RAM_dic[user_id] = {'lang' : lang}
+
+			context.bot.send_message(chat_id = user_id, text = CONTEXT['you_chose_lang'][lang])
+			query.message.edit_media(media = InputMediaPhoto(media = open('photos/hello_bot.png', 'rb')))
+			query.message.edit_caption(CONTEXT['hello_my_name'][lang])
+
+			if RAM_dic[user_id]['edit_count'] == 0:
+				# context.bot.send_message(chat_id = user_id, text = "ismingzni jo'nating!")
+				query.message.reply_photo(
+					photo = open('photos/upset_bot.png', 'rb'),
+					caption = CONTEXT['need_sign_up'][lang])
+
+	else:
+		pass
 
 def main():
 	updater = Updater(token = API_TOKEN)
@@ -99,6 +169,7 @@ def main():
 
 	dispatcher.add_handler(CommandHandler('start', star))
 	dispatcher.add_handler(MessageHandler(Filters.text, core_function))
+	dispatcher.add_handler(CallbackQueryHandler(core_inline))
 
 	updater.start_polling()
 	updater.idle()
