@@ -5,6 +5,12 @@ from media import Message_media, CONTEXT
 """
 v.3.0.0
 """
+def add_user(user_id, lang):
+	if RAM_dic.get(user_id):
+		RAM_dic[user_id]['lang'] = lang
+		RAM_dic[user_id]['edit_count'] += 1
+	else:
+		RAM_dic[user_id] = {'lang' : lang, 'edit_count' : 0, 'send_name' : 0, 'user_name' : "0"}
 API_TOKEN = '6082856375:AAH8nuCVOpIRRnVkaHyXdaSM9TzLiwjlKh0'
 
 RAM_lis = []
@@ -53,11 +59,12 @@ def star(update, context):
 	if database.available_user(user_id):
 		pass 
 	else:
-		if user_id in  RAM_lis:
+		if RAM_dic.get(user_id):
+			lang = RAM_dic[user_id]['lang']
 			update.message.reply_photo(
 				photo = open('photos/chose_lang.png', 'rb'),
-				caption = CONTEXT['which_lang'][RAM_dic[user_id]['lang']],
-				reply_markup = InlineKeyboardMarkup([message_media.get_inline_lang(lang = 'en')]))
+				caption = CONTEXT['which_lang'][lang],
+				reply_markup = InlineKeyboardMarkup([message_media.get_inline_lang(lang = lang)]))
 
 		else:
 			RAM_lis.append(user_id)
@@ -87,6 +94,7 @@ def lang_mode_hendler(update):
 def core_function(update, context):
 	user_id = update.message.chat.id
 	message = update.message.text
+	# print(RAM_lis)
 	buttons = ["uzb-en mode 🇺🇿🔄🇬🇧", "uzb-ru mode 🇺🇿🔄🇷🇺", "🛡 Oxford Definition", "Aloqa 📲", "⚙️ Sozlamalar"]
 	if database.available_user(user_id):
 		pass
@@ -116,29 +124,57 @@ def core_function(update, context):
 		# update.message.reply_text(f"Your action is {action}.")
 
 	else:
-		if user_id not in RAM_lis or message in buttons:
-			update.message.reply_text("Siz ro'yxatdan o'tmagansiz! Iltimos ro'yxatdan o'tish uchun ismingzni kiriting:")
-			RAM_lis.append(user_id)
-			RAM_dic[user_id] = {'count' : 0}
-		elif message not in buttons:
-			if RAM_dic[user_id]['count'] == 0:
-				RAM_dic[user_id]['name'] = capital_letter(message)
-				RAM_dic[user_id]['count'] += 1
+		if user_id in RAM_lis:
+			if RAM_dic.get(user_id):
+				# If user fir send your name
+				lang = RAM_dic[user_id]['lang']
 
-				update.message.reply_text(f"Yaxshi {capital_letter(message)}, agar ismingzni xato yuborgan bo'lsangiz ismingizni qaytadan yuborishingiz mumkun! End esa o'zingizga qulay tilni tanlang.",
-					reply_markup = InlineKeyboardMarkup([lang_inbuttons]))
+				if RAM_dic[user_id]['send_name'] == 0: 
+					RAM_dic[user_id]['send_name'] =+ 1
+					RAM_dic[user_id]['user_name'] = message
+					buttons = message_media.get_regist_button(lang = lang)
+
+					caption = f"{CONTEXT['well_name'][lang][0]} {message} {CONTEXT['well_name'][lang][1]}" # Well name ...
+					
+					update.message.reply_photo(photo = open('photos/happy_bot.png', 'rb'), 
+						caption = caption,
+						reply_markup = ReplyKeyboardMarkup([buttons], resize_keyboard = True, one_time_keyboard = True))
+					
 				
+				else:
+					# buttons = message_media.get_regist_button(lang = lang)
+					RAM_dic[user_id]['user_name'] = message
+					reply = CONTEXT['your_name'][lang][0] + message + CONTEXT['your_name'][lang][1] # Your name change ... 
+					update.message.reply_text(reply)
+
+					
 			else:
-				update.message.reply_text(f"Ismingiz {capital_letter(message)} o'zgartirildi! End esa o'zingizga qulay tilni tanlang.",
-					reply_markup = InlineKeyboardMarkup([lang_inbuttons]))
+				update.message.reply_photo(
+				photo = open('photos/chose_lang.png', 'rb'),
+				caption = f"🇺🇿 Sizga qaysi til qulay?\n🇬🇧 Which language is the best for you?\n🇷🇺 Какой язык вам удобен?",
+				reply_markup = InlineKeyboardMarkup([message_media.get_inline_lang(lang = 'en')]))
 
 
-def add_user(user_id, lang):
-	if RAM_dic.get(user_id):
-		RAM_dic[user_id]['lang'] = lang
-		RAM_dic[user_id]['edit_count'] += 1
-	else:
-		RAM_dic[user_id] = {'lang' : lang, 'edit_count' : 0}
+		else:
+			pass
+			# update.message.reply_text("Siz ro'yxatdan o'tmagansiz! Iltimos ro'yxatdan o'tish uchun ismingzni kiriting:")
+			# RAM_lis.append(user_id)
+			# # RAM_dic[user_id] = {'count' : 0}
+
+			# update.message.reply_text(f"Yaxshi {capital_letter(message)}, agar ismingzni xato yuborgan bo'lsangiz ismingizni qaytadan yuborishingiz mumkun! ",
+			# 	reply_markup = InlineKeyboardMarkup([lang_inbuttons]))
+				
+			# else:
+			# 	update.message.reply_text(f"Ismingiz {capital_letter(message)} o'zgartirildi! End esa o'zingizga qulay tilni tanlang.",
+			# 		reply_markup = InlineKeyboardMarkup([lang_inbuttons]))
+
+
+# def add_user(user_id, lang):
+# 	if RAM_dic.get(user_id):
+# 		RAM_dic[user_id]['lang'] = lang
+# 		RAM_dic[user_id]['edit_count'] += 1
+# 	else:
+# 		RAM_dic[user_id] = {'lang' : lang, 'edit_count' : 0}
 
 def core_inline(update, context):
 	user_id = update.callback_query.message.chat.id
@@ -150,15 +186,23 @@ def core_inline(update, context):
 			add_user(user_id, lang)
 			# RAM_dic[user_id] = {'lang' : lang}
 
-			context.bot.send_message(chat_id = user_id, text = CONTEXT['you_chose_lang'][lang])
+			# context.bot.send_message(chat_id = user_id, text = CONTEXT['you_chose_lang'][lang])
 			query.message.edit_media(media = InputMediaPhoto(media = open('photos/hello_bot.png', 'rb')))
-			query.message.edit_caption(CONTEXT['hello_my_name'][lang])
+			query.message.edit_caption(CONTEXT['you_chose_lang'][lang])
+			buttons = message_media.get_change_lang_inline(lang = lang)
+			query.message.edit_reply_markup(reply_markup = InlineKeyboardMarkup([buttons])) 
 
 			if RAM_dic[user_id]['edit_count'] == 0:
-				# context.bot.send_message(chat_id = user_id, text = "ismingzni jo'nating!")
+				RAM_dic[user_id]['edit_count'] += 1
 				query.message.reply_photo(
 					photo = open('photos/upset_bot.png', 'rb'),
 					caption = CONTEXT['need_sign_up'][lang])
+		
+		elif query.data == "nouser_change_lang":
+			lang = RAM_dic[user_id]['lang']
+
+			buttons = message_media.get_inline_lang(lang = lang)
+			query.message.edit_reply_markup(reply_markup = InlineKeyboardMarkup([buttons]))
 
 	else:
 		pass

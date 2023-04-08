@@ -25,6 +25,18 @@ CONTEXT = {'you_chose_lang':
 				'uz' : "Afsus siz ro'yxatdan o'tmagansiz! Iltimos, ro'yxatdan o'tish uchun ismigizni Jo'nating",
 				'en' : "Sorry you are not registered! Please, Send your name to register",
 				'ru' : "Извините, вы не зарегистрированы! Пожалуйста, укажите свое имя, чтобы зарегистрироваться"
+			},
+		'well_name' : 
+			{
+				'uz' : ["Yaxshi ", "! Agar ismingizni xato kiritgan bo'lsangiz qaytadan ismingizni jo'natishingiz mumkun!"],
+				'en' : ["Good ", "! If you entered your name incorrectly, you may send your name again!"],
+				'ru' : ["Добрый",  " ! Если вы ввели свое имя неправильно, вы можете отправить свое имя еще раз!"]
+			},
+		'your_name' : 
+			{
+				'uz' : ["Sizning ismingiz ", "ga o'zgartirildi!"],
+				'en' : ["Your name has been changed to ", "!"],
+				'ru' : ["Ваше имя изменено на ", "!"]
 			}
 		}
 
@@ -55,12 +67,20 @@ class Message_media:
 		return inline_buttons
 
 	def get_regist_button(self, lang = 'uz'):
-		parms = {
+		params = {
 			'uz' : [KeyboardButton(text = "📝 Ro'yxatdan o'tish")],
 			'ru' : [KeyboardButton(text = '📝 Зарегистрироваться')],
 			'en' : [KeyboardButton(text = "📝 Sign up")]
 			}
-		return parms[lang]
+		return params[lang]
+
+	def get_change_lang_inline(self, lang = 'uz'):
+		params = {
+			'uz' : "♻️ Tilni o'zgartirish",
+			'en' : "♻️ Change the language",
+			'ru' : "♻️ Изменить язык"
+			}
+		return [InlineKeyboardButton(text = params[lang], callback_data = "nouser_change_lang")]
 
 if __name__ == '__main__':
 	media = Media()
