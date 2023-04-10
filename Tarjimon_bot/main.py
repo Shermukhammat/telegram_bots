@@ -124,7 +124,10 @@ def core_function(update, context):
 		# update.message.reply_text(f"Your action is {action}.")
 
 	else:
-		if user_id in RAM_lis:
+		if message in ["📝 Ro'yxatdan o'tish", '📝 Зарегистрироваться', "📝 Sign up"]:
+			pass
+
+		elif user_id in RAM_lis:
 			if RAM_dic.get(user_id):
 				# If user fir send your name
 				lang = RAM_dic[user_id]['lang']
@@ -146,27 +149,14 @@ def core_function(update, context):
 					RAM_dic[user_id]['user_name'] = message
 					reply = CONTEXT['your_name'][lang][0] + message + CONTEXT['your_name'][lang][1] # Your name change ... 
 					update.message.reply_text(reply)
-
-					
+				
 			else:
 				update.message.reply_photo(
 				photo = open('photos/chose_lang.png', 'rb'),
 				caption = f"🇺🇿 Sizga qaysi til qulay?\n🇬🇧 Which language is the best for you?\n🇷🇺 Какой язык вам удобен?",
 				reply_markup = InlineKeyboardMarkup([message_media.get_inline_lang(lang = 'en')]))
-
-
 		else:
 			pass
-			# update.message.reply_text("Siz ro'yxatdan o'tmagansiz! Iltimos ro'yxatdan o'tish uchun ismingzni kiriting:")
-			# RAM_lis.append(user_id)
-			# # RAM_dic[user_id] = {'count' : 0}
-
-			# update.message.reply_text(f"Yaxshi {capital_letter(message)}, agar ismingzni xato yuborgan bo'lsangiz ismingizni qaytadan yuborishingiz mumkun! ",
-			# 	reply_markup = InlineKeyboardMarkup([lang_inbuttons]))
-				
-			# else:
-			# 	update.message.reply_text(f"Ismingiz {capital_letter(message)} o'zgartirildi! End esa o'zingizga qulay tilni tanlang.",
-			# 		reply_markup = InlineKeyboardMarkup([lang_inbuttons]))
 
 
 # def add_user(user_id, lang):

@@ -22,17 +22,18 @@ class Bot_database:
 		self.file_name = db_file_name
 
 
-	def creat_tables(self, user_table_name, locate_table_name):
+	def creat_tables(self, user_table_name = "users", chat_listb_name = "chat_list", cheet_tb_name = "cheet"):
 		self.user_table = user_table_name
-		self.locate_table = locate_table_name
+		self.chat_list = chat_listb_name
+		self.cheet_tb = cheet_tb_name
 
 		conection = sqlite3.connect(self.file_name)
 		cursor = conection.cursor()
 
-		cursor.execute(f"CREATE TABLE IF NOT EXISTS {user_table_name} ('user_id', 'user_name', 'lang');")
-		cursor.execute(f"CREATE TABLE IF NOT EXISTS {locate_table_name} ('user_id', 'menu');")
+		cursor.execute(f"CREATE TABLE IF NOT EXISTS {user_table_name} ('user_id', 'user_name', 'lang', 'action', 'where');")
+		cursor.execute(f"CREATE TABLE IF NOT EXISTS {chat_listb_name} ('user_id', 'conversation', 'new_message');")
 
-		cursor.execute(f"CREATE TABLE IF NOT EXISTS head_menu ('user_id', 'action');")
+		cursor.execute(f"CREATE TABLE IF NOT EXISTS {cheet_tb_name} ('user_id', 'message');")
 
 		conection.commit()
 		conection.close()
@@ -60,20 +61,28 @@ class Bot_database:
 
 	def available_user(self, user_id):
 		"""
-		This function chack user
+		This function can chack user
+
+		parms:
+			user_id : str, int;
 		"""
 		respons = False
 		conection = sqlite3.connect(self.file_name)
 		cursor = conection.cursor()
 
-		for row in cursor.execute(f"SELECT user_id FROM {self.user_table};"):
-			if row == user_id:
-				respons = True
-				break
+		cursor.execute(f"SELECT user_id FROM {self.user_table} WHERE user_id == '{user_id}';")
+		respons = cursor.fetchall()
+
 		conection.commit()
 		conection.close()
-		
-		return respons
+
+		if len(respons) > 0:
+			if respons[0][0] == user_id:
+				return True
+			else:
+				return False
+		else:
+			return False
 
 	def add_user(self, user_id, username):
 		user_data = [username, user_id, "uz"]
@@ -116,7 +125,8 @@ class Bot_database:
 if __name__ == '__main__':
 	database = Bot_database("test.db")
 
-	database.creat_user_table("users")
+	database.creat_tables()
+	print(database.available_user('11'))
 	# database.show_user_table()
 
 
