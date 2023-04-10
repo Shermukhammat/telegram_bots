@@ -30,10 +30,10 @@ class Bot_database:
 		conection = sqlite3.connect(self.file_name)
 		cursor = conection.cursor()
 
-		cursor.execute(f"CREATE TABLE IF NOT EXISTS {user_table_name} ('user_id', 'user_name', 'lang', 'action', 'where');")
-		cursor.execute(f"CREATE TABLE IF NOT EXISTS {chat_listb_name} ('user_id', 'conversation', 'new_message');")
+		cursor.execute(f"CREATE TABLE IF NOT EXISTS {user_table_name} ('user_id' INTEGER PRIMARY KEY, 'user_name', 'lang', 'action', 'where');")
+		cursor.execute(f"CREATE TABLE IF NOT EXISTS {chat_listb_name} ('user_id' INTEGER PRIMARY KEY, 'conversation', 'new_message');")
 
-		cursor.execute(f"CREATE TABLE IF NOT EXISTS {cheet_tb_name} ('user_id', 'message');")
+		cursor.execute(f"CREATE TABLE IF NOT EXISTS {cheet_tb_name} ('user_id' INTEGER PRIMARY KEY, 'message');")
 
 		conection.commit()
 		conection.close()
@@ -64,9 +64,8 @@ class Bot_database:
 		This function can chack user
 
 		parms:
-			user_id : str, int;
+			user_id : int;
 		"""
-		respons = False
 		conection = sqlite3.connect(self.file_name)
 		cursor = conection.cursor()
 
@@ -75,7 +74,6 @@ class Bot_database:
 
 		conection.commit()
 		conection.close()
-
 		if len(respons) > 0:
 			if respons[0][0] == user_id:
 				return True
@@ -84,16 +82,23 @@ class Bot_database:
 		else:
 			return False
 
-	def add_user(self, user_id, username):
-		user_data = [username, user_id, "uz"]
+	def add_user(self, user_id, user_name, lang):
+		"""
+		This function can add user;
+		params:
+			user_id : int (unicalni);
+			user_name : str;
+			lang : str (uz/ru/en);
+		# """
+		# user_data = [int(user_id), user_name, lang, 'nofing', 'head_menu']
 
 		conection = sqlite3.connect(self.file_name)
 		cursor = conection.cursor()
-		cursor.execute(f"INSERT INTO {self.user_table} VALUES (?, ?, ?);", user_data)
+		cursor.execute(f"INSERT INTO {self.user_table} VALUES (?, ?, ?, ?, ?);", (user_id, user_name, lang, 'nofing', 'head_menu'))
 
 		conection.commit()
 		conection.close()
-		print(f"{username} datbasega qo'shildi.")
+		print(f"{user_name} datbasega qo'shildi.")
 
 
 	# def get_user_action(self, user_id):
@@ -126,7 +131,9 @@ if __name__ == '__main__':
 	database = Bot_database("test.db")
 
 	database.creat_tables()
-	print(database.available_user('11'))
+	# print(database.available_user(101))
+	database.add_user(1125, "SHermuhammad", 'uz')
+
 	# database.show_user_table()
 
 
