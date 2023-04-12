@@ -31,33 +31,13 @@ class Bot_database:
 		cursor = conection.cursor()
 
 		cursor.execute(f"CREATE TABLE IF NOT EXISTS {user_table_name} ('user_id' INTEGER PRIMARY KEY, 'user_name', 'lang', 'action', 'where');")
-		cursor.execute(f"CREATE TABLE IF NOT EXISTS {chat_listb_name} ('user_id' INTEGER PRIMARY KEY, 'conversation', 'new_message');")
+		cursor.execute(f"CREATE TABLE IF NOT EXISTS {chat_listb_name} ('user_id' INTEGER PRIMARY KEY, 'conversation' json);")
 
 		cursor.execute(f"CREATE TABLE IF NOT EXISTS {cheet_tb_name} ('user_id' INTEGER PRIMARY KEY, 'message');")
 
 		conection.commit()
 		conection.close()
 
-
-	# def creat_locate_table(self, table_name):
-	# 	self.located_table = table_name
-	# 	conection = sqlite3.connect(self.file_name)
-	# 	cursor = conection.cursor()
-
-	# 	cursor.execute(f"CREATE TABLE IF NOT EXISTS {table_name} ('user_id', 'user_name', 'lang');")
-
-	# 	conection.commit()
-	# 	conection.close()
-
-	# def show_user_table(self):
-	# 	conection = sqlite3.connect(self.file_name)
-	# 	cursor = conection.cursor()
-
-	# 	for row in cursor.execute(f"SELECT * FROM {self.user_table};"):
-	# 		print(row)
-
-	# 	conection.commit()
-	# 	conection.close()
 
 	def available_user(self, user_id):
 		"""
@@ -89,13 +69,13 @@ class Bot_database:
 			user_id : int (unicalni);
 			user_name : str;
 			lang : str (uz/ru/en);
-		# """
-		# user_data = [int(user_id), user_name, lang, 'nofing', 'head_menu']
+		"""
 
 		conection = sqlite3.connect(self.file_name)
 		cursor = conection.cursor()
 		cursor.execute(f"INSERT INTO {self.user_table} VALUES (?, ?, ?, ?, ?);", (user_id, user_name, lang, 'nofing', 'head_menu'))
-
+		cursor.execute(f"INSERT INTO {self.chat_list} VALUES (?, ?);", (user_id, {}))
+		# cursor.execute(f"INSERT INTO {self.cheet_tb} VALUES (?, ?, ?, ?, ?);", (user_id, user_name, lang, 'nofing', 'head_menu'))
 		conection.commit()
 		conection.close()
 		print(f"{user_name} datbasega qo'shildi.")

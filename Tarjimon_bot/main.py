@@ -31,22 +31,11 @@ commands = [
 	BotCommand(command = "help", description = "Botni ishlatish bo'ycha yordam")
 	]
 
-head_menu_buttons = [
-	[KeyboardButton(text = "uzb-en mode 🇺🇿🔄🇬🇧"), 
-	KeyboardButton(text = "uzb-ru mode 🇺🇿🔄🇷🇺"), 
-	KeyboardButton(text = "🛡 Oxford Definition")],
-	[KeyboardButton(text = "Aloqa 📲"), KeyboardButton(text = "⚙️ Sozlamalar")]]
-
-# Chose lang Inline Buttons
-lang_inbuttons = [
-	InlineKeyboardButton(text = "🇺🇿 o'zbekcha", callback_data = "set_uz"),
-	InlineKeyboardButton(text = "🇷🇺 Ruscha", callback_data = "set_ru"),
-	InlineKeyboardButton(text = "🇬🇧 Inglizcha", callback_data = "set_en")]
 
 registir_inbutton = [InlineKeyboardButton(text = "📝 ro'yxatdan o'tish", callback_data = "add_user")]
 
 database = Bot_database("test.db")
-database.creat_tables('users', 'loacated_menu')
+database.creat_tables(user_table_name = "users_data", chat_listb_name = "chat", cheet_tb_name = "cheet")
 
 message_media = Message_media()
 
@@ -98,35 +87,20 @@ def core_function(update, context):
 	buttons = ["uzb-en mode 🇺🇿🔄🇬🇧", "uzb-ru mode 🇺🇿🔄🇷🇺", "🛡 Oxford Definition", "Aloqa 📲", "⚙️ Sozlamalar"]
 	if database.available_user(user_id):
 		pass
-		# if :
-		# 	pass
-		# if message == "uzb-en mode 🇺🇿🔄🇬🇧":
-		# 	database.set_user_action(user_id, "en")
-		# 	update.message.reply_text("O'zbekch Inglizcha tartibi yoqildi.")
-		# elif message == "uzb-ru mode 🇺🇿🔄🇷🇺":
-		# 	database.set_user_action(user_id, "ru")
-		# 	update.message.reply_text("O'zbekch Ruscha tartibi yoqildi.")
-		# elif message == "🛡 Oxford Definition":
-		# 	database.set_user_action(user_id, "def")
-		# 	update.message.reply_text("Oxford Definition tartibi yoqildi.")
-		# if message == "Aloqa 📲":
-		# 	buttons = [[KeyboardButton(text = "📬 SHikoyat va takliflar uchun"), KeyboardButton(text = "📌 Reklama berish")],
-		# 		[KeyboardButton(text = "⬅️ orqaga ")]]
-		# 	update.message.reply_text(text = "Aloqa bo'lmi:", reply_markup = ReplyKeyboardMarkup(buttons, resize_keyboard = True, one_time_keyboard = True))
-
-		# elif message == "⬅️ orqaga":
-		# 	update.message.reply_text(text = "Bosh menu:", 
-		# 		reply_markup = ReplyKeyboardMarkup(menu_buttons, resize_keyboard = True, one_time_keyboard = True))
-
-
-		# action = database.get_user_action(user_id)
-
-		# update.message.reply_text(f"Your action is {action}.")
-
+		
 	else:
-		if message in ["📝 Ro'yxatdan o'tish", '📝 Зарегистрироваться', "📝 Sign up"]:
-			pass
+		#Registir user
+		if message in ["📝 Ro'yxatdan o'tish", '📝 Зарегистрироваться', "📝 Sign up"] and RAM_dic.get(user_id):
+			user_name = RAM_dic[user_id]['user_name']
+			lang = RAM_dic[user_id]['lang']
+			buttons = message_media.get_uh_menu(lang = lang)
 
+			database.add_user(int(user_id), user_name, lang)
+			head_menu = CONTEXT['head_menu'][lang]
+			update.message.reply_text(text = head_menu, 
+				reply_markup =  ReplyKeyboardMarkup(buttons, resize_keyboard = True, one_time_keyboard = True))
+
+		#Ask user name
 		elif user_id in RAM_lis:
 			if RAM_dic.get(user_id):
 				# If user fir send your name
@@ -155,16 +129,8 @@ def core_function(update, context):
 				photo = open('photos/chose_lang.png', 'rb'),
 				caption = f"🇺🇿 Sizga qaysi til qulay?\n🇬🇧 Which language is the best for you?\n🇷🇺 Какой язык вам удобен?",
 				reply_markup = InlineKeyboardMarkup([message_media.get_inline_lang(lang = 'en')]))
-		else:
-			pass
 
 
-# def add_user(user_id, lang):
-# 	if RAM_dic.get(user_id):
-# 		RAM_dic[user_id]['lang'] = lang
-# 		RAM_dic[user_id]['edit_count'] += 1
-# 	else:
-# 		RAM_dic[user_id] = {'lang' : lang, 'edit_count' : 0}
 
 def core_inline(update, context):
 	user_id = update.callback_query.message.chat.id
@@ -194,7 +160,7 @@ def core_inline(update, context):
 			buttons = message_media.get_inline_lang(lang = lang)
 			query.message.edit_reply_markup(reply_markup = InlineKeyboardMarkup([buttons]))
 
-	else:
+	elif database.available_user(user_id):
 		pass
 
 def main():

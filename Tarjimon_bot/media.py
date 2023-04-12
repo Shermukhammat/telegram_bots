@@ -37,7 +37,8 @@ CONTEXT = {'you_chose_lang':
 				'uz' : ["Sizning ismingiz ", "ga o'zgartirildi!"],
 				'en' : ["Your name has been changed to ", "!"],
 				'ru' : ["Ваше имя изменено на ", "!"]
-			}
+			},
+		'head_menu' : {'uz' : 'Bosh menu', 'ru' : 'Главное меню', 'en' : 'Head menu'}
 		}
 
 class Message_media:
@@ -82,6 +83,22 @@ class Message_media:
 			}
 		return [InlineKeyboardButton(text = params[lang], callback_data = "nouser_change_lang")]
 
+	def get_uh_menu(self, lang = 'uz'):
+		"""
+			User head menu buttons
+		"""
+		params = {
+			'uz' : [
+				[KeyboardButton(text = "uzb-en mode 🇺🇿🔄🇬🇧"), KeyboardButton(text = "uzb-ru mode 🇺🇿🔄🇷🇺"), KeyboardButton(text = "🛡 Oxford Definition")],
+				[KeyboardButton(text = "Aloqa 📲"), KeyboardButton(text = "⚙️ Sozlamalar")]],
+			'ru' : [
+				[KeyboardButton(text = "узб-анг мод 🇺🇿🔄🇬🇧"), KeyboardButton(text = "узб-ру мод 🇺🇿🔄🇷🇺"), KeyboardButton(text = "🛡 Оксфорд дефинитион")],
+				[KeyboardButton(text = "контакт 📲"), KeyboardButton(text = "⚙️ настройки")]],
+			'en' : [
+				[KeyboardButton(text = "uzb-en mode 🇺🇿🔄🇬🇧"), KeyboardButton(text = "uzb-ru mode 🇺🇿🔄🇷🇺"), KeyboardButton(text = "🛡 Oxford Definition")],
+				[KeyboardButton(text = "Contact 📲"), KeyboardButton(text = "⚙️ Settings")]]}
+
+		return params[lang]
 if __name__ == '__main__':
 	media = Media()
 	print(media.get_inline_regist(lang = 'uz'))
