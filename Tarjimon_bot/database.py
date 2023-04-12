@@ -70,50 +70,58 @@ class Bot_database:
 			user_name : str;
 			lang : str (uz/ru/en);
 		"""
-
+		dic = {'new_mesage' : 0, 'messages' : []}
+  
 		conection = sqlite3.connect(self.file_name)
 		cursor = conection.cursor()
+
 		cursor.execute(f"INSERT INTO {self.user_table} VALUES (?, ?, ?, ?, ?);", (user_id, user_name, lang, 'nofing', 'head_menu'))
-		cursor.execute(f"INSERT INTO {self.chat_list} VALUES (?, ?);", (user_id, {}))
+		cursor.execute(f"INSERT INTO {self.chat_list} VALUES (?, ?);", (user_id, f"{dic}"))
 		# cursor.execute(f"INSERT INTO {self.cheet_tb} VALUES (?, ?, ?, ?, ?);", (user_id, user_name, lang, 'nofing', 'head_menu'))
+		
 		conection.commit()
 		conection.close()
 		print(f"{user_name} datbasega qo'shildi.")
 
+	def get_user_data(self, user_id, chat = False):
+		conection = sqlite3.connect(self.file_name)
+		cursor = conection.cursor()
+		if chat == False:
+			cursor.execute(f"SELECT *  FROM {self.user_table} WHERE user_id == '{user_id}';")
+			user_data = cursor.fetchall()
+		
+			conection.commit()
+			conection.close()
 
-	# def get_user_action(self, user_id):
-	# 	respons = False
-	# 	conection = sqlite3.connect(self.file_name)
-	# 	cursor = conection.cursor()
-	# 	for row in cursor.execute(f"SELECT * FROM {self.user_table};"):
-	# 		if row[1] == user_id:
-	# 			respons = row[2]
-	# 			break
+			if len(user_data) == 1:
+				return {'user_data' : user_data[0]}
+		else:
+			cursor.execute(f"SELECT *  FROM {self.user_table} WHERE user_id == '{user_id}';")
+			user_data = cursor.fetchall()
 
-	# 	conection.commit()
-	# 	conection.close()
-	# 	return respons
+			cursor.execute(f"SELECT *  FROM {self.chat_list} WHERE user_id == '{user_id}';")
+			chat = cursor.fetchall()
 
-	# def set_user_action(self, user_id, action):
-	# 	# print(f"user id: {user_id}")
-	# 	# print(f"lang: {lang}")
+			conection.commit()
+			conection.close()
+			
+			if len(user_data) == 1 and len(chat) == 1:
+				return {'user_data' : user_data[0], 'chat' : chat[0]}
 
-	# 	conection = sqlite3.connect(self.file_name)
-	# 	cursor = conection.cursor()
-	# 	cursor.execute(f"UPDATE {self.user_table} SET action = '{action}' WHERE user_id == {user_id};")
-
-	# 	conection.commit()
-	# 	conection.close()
-	
+	def updata_user_data(self, user_id, chat = False):
+		pass
 
 
 if __name__ == '__main__':
 	database = Bot_database("test.db")
 
-	database.creat_tables()
+	database.creat_tables(user_table_name = "users_data", chat_listb_name = "chat", cheet_tb_name = "cheet")
 	# print(database.available_user(101))
-	database.add_user(1125, "SHermuhammad", 'uz')
+	# database.add_user('01111', 'SHermuxammad', 'uz')
+	data = database.get_user_data('1111', chat = False)
+	print(data)
+	
 
-	# database.show_user_table()
+
 
 
