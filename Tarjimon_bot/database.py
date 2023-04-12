@@ -1,5 +1,6 @@
 import sqlite3
 import os
+import json
 
 def columns_join(columns):
 	respons = ""
@@ -16,6 +17,10 @@ def make_question(column):
     for n in range(leng-1):
         respons+="?, "
     return respons+"?"
+
+def convertor(tuple):
+    print(len(tuple) % 2)
+
 
 class Bot_database:
 	def __init__(self, db_file_name):
@@ -70,7 +75,7 @@ class Bot_database:
 			user_name : str;
 			lang : str (uz/ru/en);
 		"""
-		dic = {'new_mesage' : 0, 'messages' : []}
+		dic = {"new_mesage" : "0", "messages" : "[]"}
   
 		conection = sqlite3.connect(self.file_name)
 		cursor = conection.cursor()
@@ -84,6 +89,17 @@ class Bot_database:
 		print(f"{user_name} datbasega qo'shildi.")
 
 	def get_user_data(self, user_id, chat = False):
+		"""
+		GET USER DAT 
+		this function can get user data with user data;
+
+		Args:
+			user_id (int/str): find user data with id;
+			chat (bool, optional): If chat to be True, return chat data. Defaults to False.
+
+		Returns:
+			dict: {'user_data' : {'user_id : int, 'name' : str, 'lang' : str, 'where' : str}, (if chat param == True) 'chat' : {'user_id' : int, 'messages' : JSON}'}
+		"""
 		conection = sqlite3.connect(self.file_name)
 		cursor = conection.cursor()
 		if chat == False:
@@ -94,7 +110,8 @@ class Bot_database:
 			conection.close()
 
 			if len(user_data) == 1:
-				return {'user_data' : user_data[0]}
+				user_id, name, lang, where = user_data[0][0], user_data[0][1], user_data[0][2],  user_data[0][3]
+				return {'user_data' : {'user_id' : user_id, 'name' : name, 'lang' : lang, 'where' : where}}
 		else:
 			cursor.execute(f"SELECT *  FROM {self.user_table} WHERE user_id == '{user_id}';")
 			user_data = cursor.fetchall()
@@ -106,7 +123,10 @@ class Bot_database:
 			conection.close()
 			
 			if len(user_data) == 1 and len(chat) == 1:
-				return {'user_data' : user_data[0], 'chat' : chat[0]}
+				user_id, name, lang, where = user_data[0][0], user_data[0][1], user_data[0][2],  user_data[0][3]
+				messages = chat[0][1]
+				messages = json.loads(messages.replace("'", '"'))
+				return {'user_data' : {'user_id' : user_id, 'name' : name, 'lang' : lang, 'where' : where}, 'chat' : {'user_id' : user_id, 'messages' : messages}}
 
 	def updata_user_data(self, user_id, chat = False):
 		pass
@@ -117,10 +137,10 @@ if __name__ == '__main__':
 
 	database.creat_tables(user_table_name = "users_data", chat_listb_name = "chat", cheet_tb_name = "cheet")
 	# print(database.available_user(101))
-	# database.add_user('01111', 'SHermuxammad', 'uz')
-	data = database.get_user_data('1111', chat = False)
+	# database.add_user(10, 'SHermuxammad', 'uz')
+	data = database.get_user_data(11, chat = True)
 	print(data)
-	
+
 
 
 
