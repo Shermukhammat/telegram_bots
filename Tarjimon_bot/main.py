@@ -43,9 +43,15 @@ defolt_lang = "en"
 
 def star(update, context):
 	user_id = update.message.chat.id
-	print(user_id)
 	if database.available_user(user_id):
-		pass 
+		user_data = database.get_user_data(user_id = user_id)
+		name = user_data["user_data"]["name"]
+		lang = user_data["user_data"]["lang"]
+
+		message = CONTEXT["you_touch_start"][lang][0] + name + CONTEXT["you_touch_start"][lang][1]
+		# print(type(message))
+		update.message.reply_photo(photo = open('photos/hello_bot.png', 'rb'), caption = message)
+
 	else:
 		if RAM_dic.get(user_id):
 			lang = RAM_dic[user_id]['lang']
@@ -64,19 +70,7 @@ def star(update, context):
 
 
 
-def lang_mode_hendler(update): 
-	message = update.message.text
-	if message == "uzn-en mode 🇺🇿-🇬🇧":
-		# print("england")
-		data_base.set_lang(update, 'en')
-		update.message.reply_text("O'zbekcha Inglizcha tartibi yoqildi")
-		return True
-	elif message == "uzb-ru mode 🇺🇿-🇷🇺":
-		# print("russia")
-		data_base.set_lang(update, 'ru')
-		update.message.reply_text("O'zbekcha Ruscha tartibi yoqildi")
-		return True
-	return False
+
 
 
 def core_function(update, context):
@@ -85,7 +79,13 @@ def core_function(update, context):
 	# print(RAM_lis)
 	buttons = ["uzb-en mode 🇺🇿🔄🇬🇧", "uzb-ru mode 🇺🇿🔄🇷🇺", "🛡 Oxford Definition", "Aloqa 📲", "⚙️ Sozlamalar"]
 	if database.available_user(user_id):
-		pass
+		user_data = database.get_user_data(user_id = user_id)
+		name = user_data["user_data"]["name"]
+		lang = user_data["user_data"]["lang"]
+		where = user_data["user_data"]['where']
+
+		if where == "he"
+
 		
 	else:
 		#Registir user
@@ -95,10 +95,11 @@ def core_function(update, context):
 			buttons = message_media.get_uh_menu(lang = lang)
 
 			database.add_user(int(user_id), user_name, lang)
-			head_menu = CONTEXT['head_menu'][lang]
-			update.message.reply_text(text = head_menu, 
-				reply_markup =  ReplyKeyboardMarkup(buttons, resize_keyboard = True, one_time_keyboard = True))
+			head_menu, you_hav_registr = CONTEXT['head_menu'][lang], CONTEXT['you_have_registred'][lang]
 
+			update.message.reply_text(text = you_hav_registr)
+			update.message.reply_text(text = head_menu, reply_markup =  ReplyKeyboardMarkup(buttons, resize_keyboard = True, one_time_keyboard = True))
+			
 		#Ask user name
 		elif user_id in RAM_lis:
 			if RAM_dic.get(user_id):

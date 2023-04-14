@@ -38,7 +38,25 @@ CONTEXT = {'you_chose_lang':
 				'en' : ["Your name has been changed to ", "!"],
 				'ru' : ["Ваше имя изменено на ", "!"]
 			},
-		'head_menu' : {'uz' : 'Bosh menu', 'ru' : 'Главное меню', 'en' : 'Head menu'}
+		'head_menu' : 
+      		{
+            'uz' : 'Bosh menu', 
+            'ru' : 'Главное меню', 
+            'en' : 'Head menu'
+            },
+		'you_have_registred' : 
+    		{
+        	'uz' : "Siz muvaffaqiyatli ro'yxatdan o'tdingiz!",
+            'ru' : "Вы успешно зарегистрировались!",
+            'en' : "You have successfully registered!"
+            },
+		"you_touch_start" : 
+			# Name
+    		{
+				'uz' : ["Assalomu alykum  ","! Sizi ko'rib turganimdan xursandman."],
+				'ru' : ["Привет ", "! Я рад тебя видеть."],
+				'en' : ["Hi ", "! I'm glad to see you."]
+			}
 		}
 
 class Message_media:
