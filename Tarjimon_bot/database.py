@@ -2,21 +2,21 @@ import sqlite3
 import os
 import json
 
-def columns_join(columns):
-	respons = ""
-	for n in range(len(columns)):
-		if n != len(columns)-1:
-			respons += f"'{columns[n]}',"
-		else:
-			respons += f"'{columns[n]}'"
-	return respons
+def str_into_lis(string):
+    respons = []
+    for item in string[1:-2].split("\","):
+        item = item.strip()
+        respons.append(item[1:].replace('"', "'"))
+    return respons
 
-def make_question(column):
-    respons = ""
-    leng = len(column)
-    for n in range(leng-1):
-        respons+="?, "
-    return respons+"?"
+def lis_into_str(lis):
+    str_array = "["
+    for item in lis:
+        str_array += f'"{item}", '
+    
+    return str_array[:-2]+"]"
+
+
 
 def convertor(tuple):
     print(len(tuple) % 2)
@@ -36,9 +36,9 @@ class Bot_database:
 		cursor = conection.cursor()
 
 		cursor.execute(f"CREATE TABLE IF NOT EXISTS {user_table_name} ('user_id' INTEGER PRIMARY KEY, 'user_name', 'lang', 'action', 'where');")
-		cursor.execute(f"CREATE TABLE IF NOT EXISTS {chat_listb_name} ('user_id' INTEGER PRIMARY KEY, 'conversation' json);")
+		cursor.execute(f"CREATE TABLE IF NOT EXISTS {chat_listb_name} ('user_id' INTEGER PRIMARY KEY, 'new_messages', 'messages');")
 
-		cursor.execute(f"CREATE TABLE IF NOT EXISTS {cheet_tb_name} ('user_id' INTEGER PRIMARY KEY, 'message');")
+		cursor.execute(f"CREATE TABLE IF NOT EXISTS {cheet_tb_name} ('user_id' INTEGER PRIMARY KEY,'messages');")
 
 		conection.commit()
 		conection.close()
@@ -75,13 +75,13 @@ class Bot_database:
 			user_name : str;
 			lang : str (uz/ru/en);
 		"""
-		dic = {"new_mesage" : "0", "messages" : "[]"}
+		dic = {"new_mesage" : "0", "messages" : " "}
   
 		conection = sqlite3.connect(self.file_name)
 		cursor = conection.cursor()
 
 		cursor.execute(f"INSERT INTO {self.user_table} VALUES (?, ?, ?, ?, ?);", (user_id, user_name, lang, 'nofing', 'head_menu'))
-		cursor.execute(f"INSERT INTO {self.chat_list} VALUES (?, ?);", (user_id, f"{dic}"))
+		cursor.execute(f"INSERT INTO {self.chat_list} VALUES (?, ?, ?);", (user_id, '0', "[]"))
 		# cursor.execute(f"INSERT INTO {self.cheet_tb} VALUES (?, ?, ?, ?, ?);", (user_id, user_name, lang, 'nofing', 'head_menu'))
 		
 		conection.commit()
@@ -124,11 +124,11 @@ class Bot_database:
 			
 			if len(user_data) == 1 and len(chat) == 1:
 				user_id, name, lang, action, where = user_data[0][0], user_data[0][1], user_data[0][2], user_data[0][3], user_data[0][4]
-				messages = chat[0][1]
+				new_messages, messages = chat[0][1], chat[0][2]
 				# messages = messages.replace("\'", "\"")
-				print(messages)
+				# print(messages)
 				# messages = json.loads(messages.replace('"', "'"))
-				# return {'user_data' : {'user_id' : user_id, 'name' : name, 'lang' : lang, 'action' : action ,'where' : where}, 'chat' : {'user_id' : user_id, 'messages' : messages}}
+				return {'user_data' : {'user_id' : user_id, 'name' : name, 'lang' : lang, 'action' : action ,'where' : where}, 'chat' : {'user_id' : user_id, 'new_messages' : new_messages, 'messages' : str_into_lis(messages)}}
 
 	def update_user_data(self, user_data):
 		"""_summary_
@@ -145,14 +145,16 @@ class Bot_database:
 			cursor = conection.cursor()
 			user = user_data['user_data']
 			user_id, name, lang, action, where = user['user_id'], user['name'], user['lang'], user['action'], user['where']
-
+			messages = lis_into_str(user_data["chat"]["messages"])
+			messages = messages.replace("'", '"')
+			new_messages = user_data["chat"]["new_messages"]
+   
 			cursor.execute(f"UPDATE {self.user_table} SET user_name = '{name}', lang = '{lang}', action = '{action}', 'where' = '{where}' WHERE user_id == {user_id};")
-			# cursor.execute(f"UPDATE {self.chat_list} SET conversation = \"{json.dumps(user_data['chat'])}\" WHERE user_id == {user_id};")
-			# print(f"UPDATE {self.chat_list} SET conversation = \"{json.dumps(user_data['chat']['messages'])}\" WHERE user_id == {user_id};")
-			mesages = user_data['chat']['messages']
-			print(mesages)
-			# print(f'UPDATE {self.chat_list} SET conversation = "{mesages}" WHERE user_id == {user_id};')
-			# cursor.execute(f'UPDATE {self.chat_list} SET conversation = "{mesages}" WHERE user_id == {user_id};')
+			cursor.execute(f"UPDATE {self.chat_list} SET new_messages = '{new_messages}', messages = '{messages}'   WHERE user_id == {user_id};")
+			
+			print(f"sucsefuly updated {self.chat_list} table.")
+			# print(f"UPDATE {self.chat_list} SET new_messages = '{new_messages}' messages = '{messages}'   WHERE user_id == {user_id};")
+			
 
 
 			conection.commit()
@@ -163,12 +165,12 @@ if __name__ == '__main__':
 	database = Bot_database("test.db")
 
 	database.creat_tables(user_table_name = "users_data", chat_listb_name = "chat", cheet_tb_name = "cheet")
-	# print(database.available_user(101))
+	# # print(database.available_user(101))
 	# database.add_user(10, 'SHermuxammad', 'uz')
-	# data = database.get_user_data(10, chat = True)
-	# print(data)
-	ls = ["user", "salom", "qalesiz", "?", "admin", "yaxshiku", "O'zingizda nima gaplar?", "user", 'menham yaxshi!2']
-	new_user_data = {'user_data': {'user_id': 10, 'name': 'sher2', 'lang': 'ru2', 'action': 'uz-en', 'where': 'contact'}, 'chat': {'user_id': 10, 'messages': {'new_mesage': '3', 'messages': f"{ls}"}}}
+	data = database.get_user_data(10, chat = True)
+	print(data)
+	# ls = ["user", "salom", "qalesiz", "?", "admin", "yaxshiku", "O'zingizda nima gaplar?", "user", 'menham yaxshi!2']
+	new_user_data = {'user_data': {'user_id': 10, 'name': 'SHER', 'lang': 'ru', 'action': 'uz-en', 'where': 'contact'}, 'chat': {'user_id': 10, 'new_messages': '20', 'messages': ["user", "salom", "qalesiz?", "o'zingzchi?"]}}
 	database.update_user_data(new_user_data)
 
 	# data = database.get_user_data(10, chat = True)
