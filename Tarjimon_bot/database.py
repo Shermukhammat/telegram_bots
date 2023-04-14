@@ -125,8 +125,10 @@ class Bot_database:
 			if len(user_data) == 1 and len(chat) == 1:
 				user_id, name, lang, action, where = user_data[0][0], user_data[0][1], user_data[0][2], user_data[0][3], user_data[0][4]
 				messages = chat[0][1]
-				messages = json.loads(messages.replace('"', "'"))
-				return {'user_data' : {'user_id' : user_id, 'name' : name, 'lang' : lang, 'action' : action ,'where' : where}, 'chat' : {'user_id' : user_id, 'messages' : messages}}
+				# messages = messages.replace("\'", "\"")
+				print(messages)
+				# messages = json.loads(messages.replace('"', "'"))
+				# return {'user_data' : {'user_id' : user_id, 'name' : name, 'lang' : lang, 'action' : action ,'where' : where}, 'chat' : {'user_id' : user_id, 'messages' : messages}}
 
 	def update_user_data(self, user_data):
 		"""_summary_
@@ -138,7 +140,7 @@ class Bot_database:
 		if user_data["chat"] == None:
 			pass
 		else:
-			print(user_data)
+			# print(user_data)
 			conection = sqlite3.connect(self.file_name)
 			cursor = conection.cursor()
 			user = user_data['user_data']
@@ -147,10 +149,10 @@ class Bot_database:
 			cursor.execute(f"UPDATE {self.user_table} SET user_name = '{name}', lang = '{lang}', action = '{action}', 'where' = '{where}' WHERE user_id == {user_id};")
 			# cursor.execute(f"UPDATE {self.chat_list} SET conversation = \"{json.dumps(user_data['chat'])}\" WHERE user_id == {user_id};")
 			# print(f"UPDATE {self.chat_list} SET conversation = \"{json.dumps(user_data['chat']['messages'])}\" WHERE user_id == {user_id};")
-			mesages = json.dumps(user_data['chat']['messages'])
-			mesages = mesages.replace("'", '"')
-			# print(f"UPDATE {self.chat_list} SET conversation = '{mesages}' WHERE user_id == {user_id};")
-			cursor.execute(f"UPDATE {self.chat_list} SET conversation = '{mesages}' WHERE user_id == {user_id};")
+			mesages = user_data['chat']['messages']
+			print(mesages)
+			# print(f'UPDATE {self.chat_list} SET conversation = "{mesages}" WHERE user_id == {user_id};')
+			# cursor.execute(f'UPDATE {self.chat_list} SET conversation = "{mesages}" WHERE user_id == {user_id};')
 
 
 			conection.commit()
@@ -163,11 +165,14 @@ if __name__ == '__main__':
 	database.creat_tables(user_table_name = "users_data", chat_listb_name = "chat", cheet_tb_name = "cheet")
 	# print(database.available_user(101))
 	# database.add_user(10, 'SHermuxammad', 'uz')
-	data = database.get_user_data(10, chat = True)
-	print(data)
-	# ls = ["user", "salom", "qalesiz", "?", "admin", "yaxshiku", "O'zingizda nima gaplar?", "user", 'menham yaxshi!2']
-	# new_user_data = {'user_data': {'user_id': 10, 'name': 'sher2', 'lang': 'ru2', 'action': 'uz-en', 'where': 'contact'}, 'chat': {'user_id': 10, 'messages': {'new_mesage': '3', 'messages': f'{ls}'}}}
-	# database.update_user_data(new_user_data)
+	# data = database.get_user_data(10, chat = True)
+	# print(data)
+	ls = ["user", "salom", "qalesiz", "?", "admin", "yaxshiku", "O'zingizda nima gaplar?", "user", 'menham yaxshi!2']
+	new_user_data = {'user_data': {'user_id': 10, 'name': 'sher2', 'lang': 'ru2', 'action': 'uz-en', 'where': 'contact'}, 'chat': {'user_id': 10, 'messages': {'new_mesage': '3', 'messages': f"{ls}"}}}
+	database.update_user_data(new_user_data)
+
+	# data = database.get_user_data(10, chat = True)
+	# print(data)
 
 
 

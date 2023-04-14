@@ -32,7 +32,6 @@ commands = [
 	]
 
 
-registir_inbutton = [InlineKeyboardButton(text = "📝 ro'yxatdan o'tish", callback_data = "add_user")]
 
 database = Bot_database("test.db")
 database.creat_tables(user_table_name = "users_data", chat_listb_name = "chat", cheet_tb_name = "cheet")
