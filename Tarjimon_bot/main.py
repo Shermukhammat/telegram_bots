@@ -84,7 +84,9 @@ def core_function(update, context):
 		lang = user_data["user_data"]["lang"]
 		where = user_data["user_data"]['where']
 
-		if where == "he"
+		if where == "head_menu":
+			if message in ["uzb-en mode 🇺🇿🔄🇬🇧", "узб-анг мод 🇺🇿🔄🇬🇧"]:
+				print("uz en tugma bosildi")
 
 		
 	else:
