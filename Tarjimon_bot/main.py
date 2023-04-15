@@ -2,6 +2,7 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, Callb
 from telegram import ReplyKeyboardMarkup, KeyboardButton, BotCommand, InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
 from database import Bot_database
 from media import Message_media, CONTEXT
+from  translator import translator
 """
 v.3.0.0
 """
@@ -85,28 +86,102 @@ def core_function(update, context):
 		name = user_data["user_data"]["name"]
 		lang = user_data["user_data"]["lang"]
 		where = user_data["user_data"]['where']
+		action = user_data["user_data"]["action"]
 
+		#HEAD MENU
 		if where == "head_menu":
+			# message = CONTEXT['uzen-mode'][lang]
+   
+			#Uzn -> eng menu
 			if message in ["uzb-en mode 🇺🇿🔄🇬🇧", "узб-анг мод 🇺🇿🔄🇬🇧"]:
-				print("uzb en")
-
-				message = CONTEXT['uzen-mode'][lang]
-				buttons = message_media.get_translater_buttons(lang = lang, mode = "uz-en")
-				update.message.reply_text(text = message, reply_markup  = ReplyKeyboardMarkup(buttons, resize_keyboard = True, one_time_keyboard = True))
 				
+				buttons = message_media.get_translater_buttons(lang = lang, mode = "uz-en/en-uz")
+				update.message.reply_text(text = CONTEXT["uz-en_menu"][lang], reply_markup  = ReplyKeyboardMarkup(buttons, resize_keyboard = True, one_time_keyboard = True))
+				
+				# updating user data
 				user_data["user_data"]['where'] = "uzent_menu"
 				database.update_user_data(user_data)
+			
+			# uz_rut_menu ->
+			if message in ["uzb-ru mode 🇺🇿🔄🇷🇺", "узб-ру мод 🇺🇿🔄🇷🇺"]:	
+				buttons = message_media.get_translater_buttons(lang = lang, mode = "uz-ru/ru-uz")
+				update.message.reply_text(text = CONTEXT["uz-ru_menu"][lang], reply_markup  = ReplyKeyboardMarkup(buttons, resize_keyboard = True, one_time_keyboard = True))
+				
+				# updating user data
+				user_data["user_data"]['where'] = "uzrut_menu"
+				database.update_user_data(user_data)
+		
+		# UZ->ENG  MENU
+		elif where == "uzent_menu":
+			if message in ["🇺🇿 O'zbekchadan ➡️ 🇬🇧 Inglizchaga", "🇺🇿 from Uzbek to ➡️ 🇬🇧 English", "🇺🇿 from Uzbek to ➡️ 🇬🇧 English"]:
+				update.message.reply_text(text = CONTEXT["uzen-mode"][lang])
+    
+				user_data["user_data"]["action"] = "uz-en"
+				database.update_user_data(user_data)
 
-		if where == "uzent_menu":
-			if message in ["🏠 Bosh sahifaga", "🏠 Back to Home", "🏠 На главную"]:
+			elif message in ["🇬🇧 Inglizchadan ➡️ 🇺🇿 O'zbekchaga", "🇬🇧 английского на ➡️ 🇺🇿 узбекский", "🇬🇧 From English to ➡️ 🇺🇿 Uzbek"]:
+				update.message.reply_text(text = CONTEXT["enuz-mode"][lang])
+    
+				user_data["user_data"]["action"] = "en-uz"
+				database.update_user_data(user_data)
+
+			elif message in ["📑 qo'lanma", "📑 руководство", "📑  manual"]:
+				update.message.reply_text("Coming soon...")
+		
+			# back to head menu
+			elif message in ["🏠 Bosh sahifaga", "🏠 Back to Home", "🏠 На главную"]:
 				buttons = message_media.get_uh_menu(lang = lang)
 				head_menu = CONTEXT['head_menu'][lang]
 
 				update.message.reply_text(text = head_menu, reply_markup =  ReplyKeyboardMarkup(buttons, resize_keyboard = True, one_time_keyboard = True))
 
+				# updating user data
 				user_data["user_data"]['where'] = "head_menu"
 				database.update_user_data(user_data)
+
+			elif action == "uz-en":
+				update.message.reply_text(translator(message, lang1 = 'uz', lang2 = 'en'))
+			
+			elif action == "en-uz":
+				update.message.reply_text(translator(message, lang1 = 'en', lang2 = 'uz'))
+
+		# UZ->RU MENU
+		elif where == "uzrut_menu":
+			if message in ["🇺🇿 O'zbekchadan ➡️ 🇷🇺 Ruschaga", "Из 🇺🇿 узбекского в ➡️ 🇷🇺 русского", "From 🇺🇿 Uzbek to ➡️ 🇷🇺 Russian"]:
+				update.message.reply_text(text = CONTEXT["uzru-mode"][lang])
+    
+				user_data["user_data"]["action"] = "uz-ru"
+				database.update_user_data(user_data)
+
+			elif message in ["🇷🇺 Ruschadan ➡️ 🇺🇿 O'zbekchaga", "С 🇷🇺 русского на ➡️ 🇺🇿 узбекский", "From 🇷🇺 Russian to ➡️ 🇺🇿 Uzbek"]:
+				update.message.reply_text(text = CONTEXT["ruuz-mode"][lang])
+    
+				user_data["user_data"]["action"] = "ru-uz"
+				database.update_user_data(user_data)
+
+			elif message in ["📑 qo'lanma", "📑 руководство", "📑  manual"]:
+				update.message.reply_text("Coming soon...")
 		
+			# back to head menu
+			elif message in ["🏠 Bosh sahifaga", "🏠 Back to Home", "🏠 На главную"]:
+				buttons = message_media.get_uh_menu(lang = lang)
+				head_menu = CONTEXT['head_menu'][lang]
+
+				update.message.reply_text(text = head_menu, reply_markup =  ReplyKeyboardMarkup(buttons, resize_keyboard = True, one_time_keyboard = True))
+
+				# updating user data
+				user_data["user_data"]['where'] = "head_menu"
+				database.update_user_data(user_data)
+
+			elif action == "uz-ru":
+				update.message.reply_text(translator(message, lang1 = 'uz', lang2 = 'ru'))
+			
+			elif action == "ru-uz":
+				update.message.reply_text(translator(message, lang1 = 'ru', lang2 = 'uz'))
+   
+   
+   
+   
 	else:
 		#Registir user
 		if message in ["📝 Ro'yxatdan o'tish", '📝 Зарегистрироваться', "📝 Sign up"] and RAM_dic.get(user_id):

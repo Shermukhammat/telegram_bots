@@ -59,16 +59,52 @@ CONTEXT = {'you_chose_lang':
 			},
 		"uzen-mode" :
 			{
-				'uz' : "O'zbekcha Inglizcha tartibi yoqildi!",
-				'en' : "Uzbek English mode is enabled!",
-				'ru' : "Режим узбекского английского включен!"
+				'uz' : "O'zbekcha Inglizcha tartibi yoqildi.",
+				'en' : "Uzbek English mode is enabled.",
+				'ru' : "Режим узбекского английского включен."
 			},
 		"enuz-mode":
 			{
-				'uz' : "Inglizcha O'zbekcha tartibi yoqildi!",
-				'en' : "English Uzbek mode is enabled!",
-				'ru' : "Режим английского узбекского включен!"
-			}
+				'uz' : "Inglizcha O'zbekcha tartibi yoqildi.",
+				'en' : "English Uzbek mode is enabled.",
+				'ru' : "Режим английского узбекского включен."
+			},
+		"uz-en_menu":
+			{
+				'uz' : "Siz inglizcha o'zbekcha tarjimon menyusidasiz!",
+				'en' : "You are in the English-Uzbek translator menu!",
+				'ru' : "Вы находитесь в меню англо-узбекского переводчика!"
+			},
+		"uz-ru_menu":
+			{
+				'uz' : "Siz Ruscha o'zbekcha tarjimon menyusidasiz!",
+				'en' : "You are in the Russian-Uzbek translator menu!",
+				'ru' : "Вы в меню русско-узбекского переводчика!"
+			},
+		"uzru-mode":
+			{
+				'uz' : "O'zbekchadan Ruschaga tartibi yoqildi.",
+				'en' : "The order from Uzbek to Russian is enabled.",
+				'ru' : "Порядок с узбекского на русский включен."
+			},
+		"ruuz-mode":
+			{
+				'uz' : "Ruschadan O'zbekchaga tartibi yoqildi.",
+				'en' : "You are in the Russian to Uzbek translator menu!",
+				'ru' : "Порядок с русского на узбекский включен."
+			},
+		"statistka" : 
+    		{
+          	'uz' : "📈 statistika", 
+       		'ru' : "📈 статистика", 
+         	'en' : "📈 statistics"
+          	},
+		"info" : 
+      	{
+        	'uz' : "🤖📂 malumot", 
+        	'en' : "🤖📂 info", 
+        	'ru' : "🤖📂 информация"
+        } 
 		}
 
 class Message_media:
@@ -120,21 +156,36 @@ class Message_media:
 		params = {
 			'uz' : [
 				[KeyboardButton(text = "uzb-en mode 🇺🇿🔄🇬🇧"), KeyboardButton(text = "uzb-ru mode 🇺🇿🔄🇷🇺"), KeyboardButton(text = "🛡 Oxford Definition")],
-				[KeyboardButton(text = "Aloqa 📲"), KeyboardButton(text = "⚙️ Sozlamalar")]],
+				[KeyboardButton(text = "Aloqa 📲"), KeyboardButton(text = "⚙️ Sozlamalar")],
+    			[KeyboardButton(text = "📈 statistika"), KeyboardButton(text = "🤖📂 malumot")]],
 			'ru' : [
 				[KeyboardButton(text = "узб-анг мод 🇺🇿🔄🇬🇧"), KeyboardButton(text = "узб-ру мод 🇺🇿🔄🇷🇺"), KeyboardButton(text = "🛡 Оксфорд дефинитион")],
-				[KeyboardButton(text = "контакт 📲"), KeyboardButton(text = "⚙️ настройки")]],
+				[KeyboardButton(text = "контакт 📲"), KeyboardButton(text = "⚙️ настройки")],
+    			[KeyboardButton(text = "📈 статистика"), KeyboardButton(text = "🤖📂 информация")]],
 			'en' : [
 				[KeyboardButton(text = "uzb-en mode 🇺🇿🔄🇬🇧"), KeyboardButton(text = "uzb-ru mode 🇺🇿🔄🇷🇺"), KeyboardButton(text = "🛡 Oxford Definition")],
-				[KeyboardButton(text = "Contact 📲"), KeyboardButton(text = "⚙️ Settings")]]}
+				[KeyboardButton(text = "Contact 📲"), KeyboardButton(text = "⚙️ Settings")],
+    			[KeyboardButton(text = "📈 statistics"), KeyboardButton(text = "🤖📂 info")]]}
 
 		return params[lang]
 	
-	def get_translater_buttons(self, lang = "uz", mode = "uz-en"):
-		if mode == "uz-en":
-			params = {'uz' : "🏠 Bosh sahifaga", 'en' : "🏠 Back to Home", 'ru' : "🏠 На главную"}
-			buttons = {'uz' : "🇬🇧 Inglizchadan ➡️ 🇺🇿 O'zbekchaga", 'ru' : "🇷🇺 английского на ➡️ 🇺🇿 узбекский", 'en' : "🇬🇧 From English to ➡️ 🇺🇿 Uzbek"}
-			return [[KeyboardButton(text = buttons[lang])], [KeyboardButton(text = params[lang])]]
+	def get_translater_buttons(self, lang = "uz", mode = "uz-ru/ru-uz"):
+		if mode == "uz-ru/ru-uz":
+			home = {'uz' : "🏠 Bosh sahifaga", 'en' : "🏠 Back to Home", 'ru' : "🏠 На главную"}
+			uzru_buttons = {'uz' : "🇺🇿 O'zbekchadan ➡️ 🇷🇺 Ruschaga", 'ru' : "Из 🇺🇿 узбекского в ➡️ 🇷🇺 русского", 'en' : "From 🇺🇿 Uzbek to ➡️ 🇷🇺 Russian"}
+			ruuz_buttons = {'uz' : "🇷🇺 Ruschadan ➡️ 🇺🇿 O'zbekchaga", 'ru' : "С 🇷🇺 русского на ➡️ 🇺🇿 узбекский", 'en' : "From 🇷🇺 Russian to ➡️ 🇺🇿 Uzbek"}
+			manual = {'uz' : "📑 qo'lanma", 'ru' : "📑 руководство", 'en' : "📑  manual"}
+			return [[KeyboardButton(text = uzru_buttons[lang]), KeyboardButton(text = ruuz_buttons[lang])], [KeyboardButton(text = manual[lang])], [KeyboardButton(text = home[lang])]]
+		
+		elif mode == "uz-en/en-uz":
+			home = {'uz' : "🏠 Bosh sahifaga", 'en' : "🏠 Back to Home", 'ru' : "🏠 На главную"}
+			uzen_buttons = {'uz' : "🇺🇿 O'zbekchadan ➡️ 🇬🇧 Inglizchaga", 'ru' : "🇺🇿 from Uzbek to ➡️ 🇬🇧 English", 'en' : "🇺🇿 from Uzbek to ➡️ 🇬🇧 English"}
+			enuz_buttons = {'uz' : "🇬🇧 Inglizchadan ➡️ 🇺🇿 O'zbekchaga", 'ru' : "🇬🇧 английского на ➡️ 🇺🇿 узбекский", 'en' : "🇬🇧 From English to ➡️ 🇺🇿 Uzbek"}
+			manual = {'uz' : "📑 qo'lanma", 'ru' : "📑 руководство", 'en' : "📑  manual"}
+			return [[KeyboardButton(text = uzen_buttons[lang]), KeyboardButton(text = enuz_buttons[lang])], [KeyboardButton(text = manual[lang])], [KeyboardButton(text = home[lang])]]
+      
+      
 if __name__ == '__main__':
-	media = Media()
-	print(media.get_inline_regist(lang = 'uz'))
+    pass
+	# media = Media()
+	# print(media.get_inline_regist(lang = 'uz'))
