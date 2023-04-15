@@ -145,7 +145,7 @@ class Bot_database:
 			user_id, name, lang, action, where = user['user_id'], user['name'], user['lang'], user['action'], user['where']			
    
 			cursor.execute(f"UPDATE {self.user_table} SET user_name = '{name}', lang = '{lang}', action = '{action}', 'where' = '{where}' WHERE user_id == {user_id};")
-			print(f"{self.user_table} table has sucsefuly updateded!")
+			# print(f"{self.user_table} table has sucsefuly updateded!")
 
 		else:
 			# print(user_data)
@@ -160,8 +160,8 @@ class Bot_database:
 			cursor.execute(f"UPDATE {self.user_table} SET user_name = '{name}', lang = '{lang}', action = '{action}', 'where' = '{where}' WHERE user_id == {user_id};")
 			cursor.execute(f"UPDATE {self.chat_list} SET new_messages = '{new_messages}', messages = '{messages}'   WHERE user_id == {user_id};")
 			
-			print(f"{self.user_table} table has sucsefuly updateded!")
-			print(f"{self.chat_list} table has sucsefuly updated!")
+			# print(f"{self.user_table} table has sucsefuly updateded!")
+			# print(f"{self.chat_list} table has sucsefuly updated!")
 			# print(f"UPDATE {self.chat_list} SET new_messages = '{new_messages}' messages = '{messages}'   WHERE user_id == {user_id};")
 			
 

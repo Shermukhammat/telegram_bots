@@ -100,11 +100,29 @@ CONTEXT = {'you_chose_lang':
          	'en' : "📈 statistics"
           	},
 		"info" : 
-      	{
-        	'uz' : "🤖📂 malumot", 
-        	'en' : "🤖📂 info", 
-        	'ru' : "🤖📂 информация"
-        } 
+		{
+			'uz' : "🤖📂 malumot", 
+			'en' : "🤖📂 info", 
+			'ru' : "🤖📂 информация"
+		},
+
+		'contact_menu' : 
+			{'uz' : "📡 Aloqa menyusi:",
+			'ru' : "📡 Меню контактов:",
+			'en' : "📡 Contact menu:"},
+
+		"admin_contact" : 
+			{
+				'uz' : "admin bilan aloqa menyusi:",
+				'en' : "admin contact menu:",
+				'ru' : "меню контактов администратора:"
+			},
+        "contact_with_admin" :
+        	{
+        		'uz' : " Adminga shikoyat va takliflaringizni yozishingiz mumkun. Admin sizga tez orada javob beradi",
+        		'ru' : ", вы можете писать свои жалобы и предложения Админу. Админ ответит вам в ближайшее время",
+        		'en' : ", you can write your complaints and suggestions to the Admin. The Admin will answer you soon"
+        	}
 		}
 
 class Message_media:
@@ -183,8 +201,26 @@ class Message_media:
 			enuz_buttons = {'uz' : "🇬🇧 Inglizchadan ➡️ 🇺🇿 O'zbekchaga", 'ru' : "🇬🇧 английского на ➡️ 🇺🇿 узбекский", 'en' : "🇬🇧 From English to ➡️ 🇺🇿 Uzbek"}
 			manual = {'uz' : "📑 qo'lanma", 'ru' : "📑 руководство", 'en' : "📑  manual"}
 			return [[KeyboardButton(text = uzen_buttons[lang]), KeyboardButton(text = enuz_buttons[lang])], [KeyboardButton(text = manual[lang])], [KeyboardButton(text = home[lang])]]
-      
-      
+	
+	def get_contact_menu(self, lang = "uz"):
+		admin = {'uz' : "👮🏻‍♂️ Admin bilan aloqa", 'en' : "👮🏻‍♂️ Contact Admin", 'ru' : "👮🏻‍♂️Связаться с Админом"}
+		coder = {'uz' : "👨🏻‍💻 dasturchi", 'ru' : "👨🏻‍💻 Программист", 'en' : "👨🏻‍💻 Programmer"}
+		head_menu = {'uz' : "🏠 Bosh sahifaga", 'en' : "🏠 Back to Home", 'ru' : "🏠 На главную"}
+
+		return [[KeyboardButton(text = admin[lang]), KeyboardButton(text = coder[lang])], [KeyboardButton(text = head_menu[lang])]]
+
+	def admin_chatm(self, lang = "uz"):
+        	send = {'uz' : "🚀 xabarlarni yuborish", 'en' : "🚀 send messages",'ru' : "🚀 отправлять сообщения"}
+        	back = {'uz' : "⬅️ orqaga", 'ru' : "⬅️ назад", 'en' : "⬅️ back"}
+        	head_menu = {'uz' : "🏠 Bosh sahifaga", 'en' : "🏠 Back to Home", 'ru' : "🏠 На главную"}
+
+        	return [[KeyboardButton(text = send[lang])], [KeyboardButton(text = back[lang]), KeyboardButton(text = head_menu[lang])]]
+
+	def delet_message(self, lang = "uz"):
+		params = {'uz' : "❌ O'chrish", 'ru' : "❌ Выключать", 'en' : "❌ Turn off"}
+
+		return [[InlineKeyboardButton(text = params[lang], callback_data = "delet_mess")]]
+
 if __name__ == '__main__':
     pass
 	# media = Media()
