@@ -138,7 +138,15 @@ class Bot_database:
 		"""
 
 		if user_data["chat"] == None:
-			pass
+			conection = sqlite3.connect(self.file_name)
+			cursor = conection.cursor()
+
+			user = user_data['user_data']
+			user_id, name, lang, action, where = user['user_id'], user['name'], user['lang'], user['action'], user['where']			
+   
+			cursor.execute(f"UPDATE {self.user_table} SET user_name = '{name}', lang = '{lang}', action = '{action}', 'where' = '{where}' WHERE user_id == {user_id};")
+			print(f"{self.user_table} table has sucsefuly updateded!")
+
 		else:
 			# print(user_data)
 			conection = sqlite3.connect(self.file_name)
@@ -152,13 +160,14 @@ class Bot_database:
 			cursor.execute(f"UPDATE {self.user_table} SET user_name = '{name}', lang = '{lang}', action = '{action}', 'where' = '{where}' WHERE user_id == {user_id};")
 			cursor.execute(f"UPDATE {self.chat_list} SET new_messages = '{new_messages}', messages = '{messages}'   WHERE user_id == {user_id};")
 			
-			print(f"sucsefuly updated {self.chat_list} table.")
+			print(f"{self.user_table} table has sucsefuly updateded!")
+			print(f"{self.chat_list} table has sucsefuly updated!")
 			# print(f"UPDATE {self.chat_list} SET new_messages = '{new_messages}' messages = '{messages}'   WHERE user_id == {user_id};")
 			
 
 
-			conection.commit()
-			conection.close()
+		conection.commit()
+		conection.close()
 
 
 if __name__ == '__main__':

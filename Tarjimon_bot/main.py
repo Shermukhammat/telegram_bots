@@ -78,6 +78,8 @@ def core_function(update, context):
 	message = update.message.text
 	# print(RAM_lis)
 	buttons = ["uzb-en mode 🇺🇿🔄🇬🇧", "uzb-ru mode 🇺🇿🔄🇷🇺", "🛡 Oxford Definition", "Aloqa 📲", "⚙️ Sozlamalar"]
+	
+	# If user hase registered
 	if database.available_user(user_id):
 		user_data = database.get_user_data(user_id = user_id)
 		name = user_data["user_data"]["name"]
@@ -86,8 +88,24 @@ def core_function(update, context):
 
 		if where == "head_menu":
 			if message in ["uzb-en mode 🇺🇿🔄🇬🇧", "узб-анг мод 🇺🇿🔄🇬🇧"]:
-				print("uz en tugma bosildi")
+				print("uzb en")
 
+				message = CONTEXT['uzen-mode'][lang]
+				buttons = message_media.get_translater_buttons(lang = lang, mode = "uz-en")
+				update.message.reply_text(text = message, reply_markup  = ReplyKeyboardMarkup(buttons, resize_keyboard = True, one_time_keyboard = True))
+				
+				user_data["user_data"]['where'] = "uzent_menu"
+				database.update_user_data(user_data)
+
+		if where == "uzent_menu":
+			if message in ["🏠 Bosh sahifaga", "🏠 Back to Home", "🏠 На главную"]:
+				buttons = message_media.get_uh_menu(lang = lang)
+				head_menu = CONTEXT['head_menu'][lang]
+
+				update.message.reply_text(text = head_menu, reply_markup =  ReplyKeyboardMarkup(buttons, resize_keyboard = True, one_time_keyboard = True))
+
+				user_data["user_data"]['where'] = "head_menu"
+				database.update_user_data(user_data)
 		
 	else:
 		#Registir user

@@ -56,6 +56,18 @@ CONTEXT = {'you_chose_lang':
 				'uz' : ["Assalomu alykum  ","! Sizi ko'rib turganimdan xursandman."],
 				'ru' : ["Привет ", "! Я рад тебя видеть."],
 				'en' : ["Hi ", "! I'm glad to see you."]
+			},
+		"uzen-mode" :
+			{
+				'uz' : "O'zbekcha Inglizcha tartibi yoqildi!",
+				'en' : "Uzbek English mode is enabled!",
+				'ru' : "Режим узбекского английского включен!"
+			},
+		"enuz-mode":
+			{
+				'uz' : "Inglizcha O'zbekcha tartibi yoqildi!",
+				'en' : "English Uzbek mode is enabled!",
+				'ru' : "Режим английского узбекского включен!"
 			}
 		}
 
@@ -117,6 +129,12 @@ class Message_media:
 				[KeyboardButton(text = "Contact 📲"), KeyboardButton(text = "⚙️ Settings")]]}
 
 		return params[lang]
+	
+	def get_translater_buttons(self, lang = "uz", mode = "uz-en"):
+		if mode == "uz-en":
+			params = {'uz' : "🏠 Bosh sahifaga", 'en' : "🏠 Back to Home", 'ru' : "🏠 На главную"}
+			buttons = {'uz' : "🇬🇧 Inglizchadan ➡️ 🇺🇿 O'zbekchaga", 'ru' : "🇷🇺 английского на ➡️ 🇺🇿 узбекский", 'en' : "🇬🇧 From English to ➡️ 🇺🇿 Uzbek"}
+			return [[KeyboardButton(text = buttons[lang])], [KeyboardButton(text = params[lang])]]
 if __name__ == '__main__':
 	media = Media()
 	print(media.get_inline_regist(lang = 'uz'))
