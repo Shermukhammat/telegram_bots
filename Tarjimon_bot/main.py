@@ -3,6 +3,7 @@ from telegram import ReplyKeyboardMarkup, KeyboardButton, BotCommand, InlineKeyb
 from database import Bot_database
 from media import Message_media, CONTEXT
 from  translator import translator
+from test import RAM
 """
 v.3.0.0
 """
@@ -16,6 +17,9 @@ API_TOKEN = '6082856375:AAH8nuCVOpIRRnVkaHyXdaSM9TzLiwjlKh0'
 
 RAM_lis = []
 RAM_dic = {}
+RAM_admes = {}
+
+
 
 def capital_letter(word):
 	word = word.capitalize()
@@ -25,20 +29,13 @@ def capital_letter(word):
 	return word
 
 
-commands = [
-	BotCommand(command = "start", description = "Botni ishga tushurish."),
-	BotCommand(command = "restart", description = "Botni qayat ishga tushurish."),
-	BotCommand(command = "info", description = "Bot statistikasni olish"),
-	BotCommand(command = "help", description = "Botni ishlatish bo'ycha yordam")
-	]
 
 
-
+ram = RAM()
 database = Bot_database("test.db")
 database.creat_tables(user_table_name = "users_data", chat_listb_name = "chat", cheet_tb_name = "cheet")
 
 message_media = Message_media()
-
 defolt_lang = "en"
 
 
@@ -67,8 +64,6 @@ def star(update, context):
 				photo = open('photos/chose_lang.png', 'rb'),
 				caption = f"🇺🇿 Sizga qaysi til qulay?\n🇬🇧 Which language is the best for you?\n🇷🇺 Какой язык вам удобен?",
 				reply_markup = InlineKeyboardMarkup([message_media.get_inline_lang(lang = 'en')]))
-
-
 
 
 
@@ -227,6 +222,7 @@ def core_function(update, context):
 				# update user data
 				user_data["user_data"]['where'] = "contact_menu"
 				database.update_user_data(user_data)
+				ram.clear_usmes(user_id = user_id)
 
 			elif message in ["🏠 Bosh sahifaga", "🏠 Back to Home", "🏠 На главную"]:
 				buttons = message_media.get_uh_menu(lang = lang)
@@ -237,16 +233,42 @@ def core_function(update, context):
 				# updating user data
 				user_data["user_data"]['where'] = "head_menu"
 				database.update_user_data(user_data)
+				ram.clear_usmes(user_id = user_id)
+
+			# SEND MESSAGE
+			elif message in ["🚀 xabarlarni yuborish", "🚀 send messages", "🚀 отправлять сообщения"]:
+				messages = ram.get_user_message(user_id = user_id)
+				if len(messages) > 0:
+					chat = database.get_user_data(user_id = user_id, chat = True)
+					new_messages = int(chat['chat']['new_messages'])
+					new_messages += len(messages)
+					chat['chat']['new_messages'] = str(new_messages)
+
+					message_data = chat['chat']['messages']
+					if len(message_data) == 1:
+						messages_data = []
+					
+					message_data.append(name)
+					for mes in messages:
+						message_data.append(mes)
+					chat['chat']['messages'] = message_data
+
+					database.update_user_data(chat)
+					ram.clear_usmes(user_id = user_id)
+
+
 
 			else:
 				message_data = update.message
 				message_id = message_data['message_id']
-				buttons = message_media.delet_message(lang = lang)
+				buttons = message_media.delet_message(lang = lang)	
 
-				print(message)
+				ram.user_message(message, user_id = user_id)
+				print(ram.get_user_message(user_id = user_id))
+
+				# print(RAM_admes)
 				context.bot.delete_message(chat_id = int(user_id), message_id = message_id)
-
-				update.message.reply_text(text = message, reply_markup = InlineKeyboardMarkup(buttons, resize_keyboard = True, one_time_keyboard = True))
+				update.message.reply_text(text = message, reply_markup = InlineKeyboardMarkup(buttons))
 
 	else:
 		#Registir user
@@ -296,9 +318,22 @@ def core_function(update, context):
 def core_inline(update, context):
 	user_id = update.callback_query.message.chat.id
 	query = update.callback_query
+	message_id = update.callback_query.message.message_id
 
 	if database.available_user(user_id):
-		pass
+		data = update.callback_query.data
+		message_id = update.callback_query.message.message_id
+		chat_id = update.callback_query.message.chat.id
+
+		message = update.callback_query.message.text
+		# print(RAM_mes_id)
+		if data == "remove" :
+			ram.delet_usmes(message, user_id = user_id)
+			print(ram.get_user_message(user_id = user_id))
+
+			context.bot.delete_message(chat_id = chat_id, message_id = message_id)
+			# update.callback_query.message
+
 
 	elif user_id in RAM_lis:
 		# print(query.data)
@@ -340,4 +375,5 @@ def main():
 
 
 if __name__ == "__main__":
+	print("starting bot... ")
 	main()

@@ -217,9 +217,10 @@ class Message_media:
         	return [[KeyboardButton(text = send[lang])], [KeyboardButton(text = back[lang]), KeyboardButton(text = head_menu[lang])]]
 
 	def delet_message(self, lang = "uz"):
-		params = {'uz' : "❌ O'chrish", 'ru' : "❌ Выключать", 'en' : "❌ Turn off"}
+		delet = {'uz' : "❌ O'chrish", 'ru' : "❌ Выключать", 'en' : "❌ Turn off"}
+		# send = {'uz' : "✅ Tayyor", 'en' : "✅ Ready", 'ru' : "✅ Готовый"}
 
-		return [[InlineKeyboardButton(text = params[lang], callback_data = "delet_mess")]]
+		return [[InlineKeyboardButton(text = delet[lang], callback_data = "remove")]]
 
 if __name__ == '__main__':
     pass
