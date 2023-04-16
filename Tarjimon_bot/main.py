@@ -50,6 +50,17 @@ def star(update, context):
 		# print(type(message))
 		update.message.reply_photo(photo = open('photos/hello_bot.png', 'rb'), caption = message)
 
+
+		buttons = message_media.get_uh_menu(lang = lang)
+		head_menu = CONTEXT['head_menu'][lang]
+
+		update.message.reply_text(text = head_menu, reply_markup =  ReplyKeyboardMarkup(buttons, resize_keyboard = True, one_time_keyboard = True))
+
+		# updating user data
+		user_data["user_data"]['where'] = "head_menu"
+		user_data["user_data"]['action'] = "nofing"
+		database.update_user_data(user_data)
+
 	else:
 		if RAM_dic.get(user_id):
 			lang = RAM_dic[user_id]['lang']
@@ -117,6 +128,18 @@ def core_function(update, context):
 				# update user data
 				user_data["user_data"]['where'] = "contact_menu"
 				database.update_user_data(user_data)
+
+
+			elif message in ["⚙️ Sozlamalar", "⚙️ настройки", "⚙️ Settings"]:
+				buttons = message_media.get_setingm(lang = lang)
+				# print(buttons)
+				update.message.reply_text(text = CONTEXT['settings'][lang], reply_markup = ReplyKeyboardMarkup(buttons, resize_keyboard = True, one_time_keyboard = True))
+
+				# update user data
+				user_data["user_data"]['where'] = 'settings'
+				database.update_user_data(user_data)
+
+
 
 		# UZ->ENG  MENU
 		elif where == "uzent_menu":
@@ -238,7 +261,7 @@ def core_function(update, context):
 			# SEND MESSAGE
 			elif message in ["🚀 xabarlarni yuborish", "🚀 send messages", "🚀 отправлять сообщения"]:
 				messages = ram.get_user_message(user_id = user_id)
-				if len(messages) > 0:
+				if len(messages) != 0:
 					chat = database.get_user_data(user_id = user_id, chat = True)
 					new_messages = int(chat['chat']['new_messages'])
 					new_messages += len(messages)
@@ -247,7 +270,7 @@ def core_function(update, context):
 					message_data = chat['chat']['messages']
 					if len(message_data) == 1:
 						messages_data = []
-					
+
 					message_data.append(name)
 					for mes in messages:
 						message_data.append(mes)
@@ -255,6 +278,11 @@ def core_function(update, context):
 
 					database.update_user_data(chat)
 					ram.clear_usmes(user_id = user_id)
+
+					update.message.reply_text("Sizning xabaringiz yuborildi. Tez orada Sizga admin javobb beradi!")
+
+				else:
+					update.message.reply_text("Iltimos birinchi xabar jo'nating")
 
 
 
@@ -269,6 +297,72 @@ def core_function(update, context):
 				# print(RAM_admes)
 				context.bot.delete_message(chat_id = int(user_id), message_id = message_id)
 				update.message.reply_text(text = message, reply_markup = InlineKeyboardMarkup(buttons))
+
+		elif where == 'settings':
+			if message in ["🏠 Bosh sahifaga", "🏠 Back to Home", "🏠 На главную"]:
+				buttons = message_media.get_uh_menu(lang = lang)
+				head_menu = CONTEXT['head_menu'][lang]
+
+				update.message.reply_text(text = head_menu, reply_markup =  ReplyKeyboardMarkup(buttons, resize_keyboard = True, one_time_keyboard = True))
+
+				# updating user data
+				user_data["user_data"]['where'] = "head_menu"
+				user_data["user_data"]['action'] = "nofing"
+				database.update_user_data(user_data) 
+
+			elif message in ["♻️ Tilni o'zgartirish", "♻️ Change the language", "♻️ Изменить язык"] and action != "chose_lang":
+				buttons = message_media.get_inlang(lang = lang)
+				update.message.reply_photo(photo = open('photos/chose_lang.png', 'rb'), caption = CONTEXT['which_lang'][lang], reply_markup = InlineKeyboardMarkup(buttons))
+
+				# update user data
+				user_data["user_data"]['action'] = "chose_lang"
+				database.update_user_data(user_data)
+
+			elif message in ["👤 Ismni O'zgartirish", "👤 Изменить имя", "👤 Change Name"] and action != 'send_name':
+
+
+				update.message.reply_photo(photo = open('photos/bot_find.png', 'rb'), caption = CONTEXT['shell_sen_name'][lang])
+				user_data["user_data"]['action'] = "send_name"
+				database.update_user_data(user_data)
+			
+			elif message in ["✅ Qo'lash", "✅ применять", '✅ Apply']:
+				new_name = ram.get_name(user_id = user_id)
+
+				if new_name != None:
+					buttons = message_media.get_setingm(lang = lang)
+					sen_message = CONTEXT['your_name_changed'][lang][0] + new_name + CONTEXT['your_name_changed'][lang][1]
+					update.message.reply_text(sen_message)
+					update.message.reply_text(text = CONTEXT['settings'][lang], reply_markup = ReplyKeyboardMarkup(buttons, resize_keyboard = True, one_time_keyboard = True))
+
+
+					user_data["user_data"]['where'] = 'settings'
+					user_data["user_data"]['name'] = new_name
+					user_data["user_data"]['action'] = 'nofing'
+					database.update_user_data(user_data)
+
+			elif message in ["❌ Bekor qilish", "❌ cancel", "❌ Отмена"]:
+				buttons = message_media.get_setingm(lang = lang)
+				# print(buttons)
+				update.message.reply_text(text = CONTEXT['settings'][lang], reply_markup = ReplyKeyboardMarkup(buttons, resize_keyboard = True, one_time_keyboard = True))
+
+				# update user data
+				user_data["user_data"]['where'] = 'settings'
+				user_data["user_data"]['action'] = 'nofing'
+				database.update_user_data(user_data)
+
+			elif message in ["🆚 Bo't versiyasi", "🆚 Бот версия", "🆚 Bot version"]:
+				sen_message = CONTEXT['bot_version'][lang]
+
+				update.message.reply_text(sen_message)
+
+			elif action == "send_name":
+				new_name = message
+				sen_message = CONTEXT['your_name'][lang][0] + new_name + CONTEXT['your_name'][lang][1]
+				ram.save_name(new_name, user_id = user_id)
+				buttons = message_media.get_change_name_buttons(lang = lang)
+
+				update.message.reply_text(sen_message, reply_markup = ReplyKeyboardMarkup(buttons, resize_keyboard = True, one_time_keyboard = True))
+
 
 	else:
 		#Registir user
@@ -322,17 +416,53 @@ def core_inline(update, context):
 
 	if database.available_user(user_id):
 		data = update.callback_query.data
-		message_id = update.callback_query.message.message_id
-		chat_id = update.callback_query.message.chat.id
-
 		message = update.callback_query.message.text
-		# print(RAM_mes_id)
-		if data == "remove" :
-			ram.delet_usmes(message, user_id = user_id)
-			print(ram.get_user_message(user_id = user_id))
 
-			context.bot.delete_message(chat_id = chat_id, message_id = message_id)
-			# update.callback_query.message
+		user_data = database.get_user_data(user_id = user_id)
+		name = user_data["user_data"]["name"]
+		lang = user_data["user_data"]["lang"]
+		where = user_data["user_data"]['where']
+		action = user_data["user_data"]["action"]
+		
+		if where == "chat_admin":
+			if data == "remove" :
+				message_id = update.callback_query.message.message_id
+				chat_id = update.callback_query.message.chat.id
+				ram.delet_usmes(message, user_id = user_id)
+
+				context.bot.delete_message(chat_id = chat_id, message_id = message_id)
+
+		elif where == 'settings':
+			print(data)
+			if data in ["set_uz", 'set_ru', 'set_en']:
+				new_lang = data[-2:]
+				buttons = message_media.get_change_lang(lang = new_lang)
+				ram.save_lang(new_lang, user_id = user_id)
+
+				# query.message.edit_caption(f"siz tanladingiz")
+				query.message.edit_media(media = InputMediaPhoto(caption = CONTEXT['you_chose_lang'][new_lang], media = open('photos/happy_bot.png', 'rb')), reply_markup = InlineKeyboardMarkup(buttons))
+				# query.message.edit_caption("chnged!!")
+				# query.message.edit_reply_markup(reply_markup = InlineKeyboardMarkup(buttons))
+				# query.message.edit_caption(f"siz tanladingiz")
+				# print(ram.get_lang(user_id = user_id))
+			elif data == 'rechose':
+				new_lang = ram.get_lang(user_id = user_id)
+				buttons = message_media.get_inlang(lang = new_lang)
+
+				query.message.edit_media(media = InputMediaPhoto(caption = CONTEXT['you_chose_lang'][lang], media = open('photos/chose_lang.png', 'rb')), reply_markup = InlineKeyboardMarkup(buttons))
+			elif data == 'aply':
+				new_lang = ram.get_lang(user_id = user_id)
+				if new_lang != None:
+					query.message.reply_text(CONTEXT['used_lang'][new_lang])
+
+					# update user data
+					user_data["user_data"]['lang'] = new_lang
+					user_data["user_data"]['where'] = 'settings'
+					database.update_user_data(user_data)
+
+					#UPDATE SETINGS MENU
+					buttons = message_media.get_setingm(lang = new_lang)
+					query.message.reply_text(text = CONTEXT['settings'][new_lang], reply_markup = ReplyKeyboardMarkup(buttons, resize_keyboard = True, one_time_keyboard = True))
 
 
 	elif user_id in RAM_lis:

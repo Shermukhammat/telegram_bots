@@ -3,6 +3,8 @@ RAM_admes = {}
 class RAM:
     def __init__(self):
         self.user_mes = dict()
+        self.names = dict()
+        self.langs = dict()
 
     def user_message(self, message, user_id = None):
         keys = list(self.user_mes.keys())
@@ -15,7 +17,12 @@ class RAM:
         return self.user_mes
 
     def get_user_message(self, user_id = None):
-        return self.user_mes[user_id]
+        keys = list(self.user_mes.keys())
+
+        if user_id in keys:
+            return self.user_mes[user_id]
+        else:
+            return []
 
     def delet_usmes(self, message, user_id = None):
         keys = list(self.user_mes.keys())
@@ -31,6 +38,31 @@ class RAM:
 
         if user_id in keys:
             self.user_mes[user_id] = []
+        keys = list(self.user_mes.keys())
+
+        if user_id in keys:
+            self.user_mes[user_id] = []
+
+
+
+    def save_name(self, name, user_id = None):
+        self.names[user_id] = name
+
+    def get_name(self, user_id = None):
+        keys = list(self.names.keys())
+
+        if user_id in keys:
+            return self.names[user_id]
+
+    def save_lang(self, lang, user_id = None):
+        self.langs[user_id] = lang
+
+    def get_lang(self, user_id = None):
+        keys = list(self.langs.keys())
+        if user_id in keys:
+            return self.langs[user_id]
+
+
 
 
 if __name__ == "__main__":

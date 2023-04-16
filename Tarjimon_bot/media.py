@@ -122,7 +122,46 @@ CONTEXT = {'you_chose_lang':
         		'uz' : " Adminga shikoyat va takliflaringizni yozishingiz mumkun. Admin sizga tez orada javob beradi",
         		'ru' : ", вы можете писать свои жалобы и предложения Админу. Админ ответит вам в ближайшее время",
         		'en' : ", you can write your complaints and suggestions to the Admin. The Admin will answer you soon"
-        	}
+        	},
+        "settings" : 
+        	{
+        		'uz' : "⚙️Sozlamalar menyusi:",
+        		'ru' : "⚙️Меню настроек:",
+        		'en' : "⚙️Settings menu:"
+        	},
+        'change_lang_inbut' : 
+        	{
+				'uz' : "♻️ Tilni o'zgartirish",
+				'en' : "♻️ Change the language",
+				'ru' : "♻️ Изменить язык"
+			},
+		"used_lang" :
+			{
+				'uz' : "🇺🇿 O'zbek tili qo'lanildi!",
+				'ru' : "🇷🇺 Используется русский язык!",
+				'en' : "🇬🇧 English is used!"
+			},
+
+		'shell_sen_name' : 
+			{
+				'uz' : "Ismingizni yuborishingiz mumkun",
+				'ru' : "Вы можете отправить свое имя",
+				'en' : "You can send your name"
+			},
+
+		'your_name_changed' : 
+			{
+				'uz' : ["Siznig ismingiz ", " sifatida saqlandi!"],
+				'ru' : ["Ваше имя сохранено как ","!"],
+				'en' : ["Your name has been saved as ", "!"]
+			},
+
+		"bot_version" : 
+			{
+				'uz' : "Bot versiyasi 3.0.0 (Beta)\n@tarjima_qilaman_robot",
+				'ru' : "Версия бота 3.0.0 (бета-версия)\n@tarjima_qilaman_robot",
+				'en' : "Bot Version 3.0.0 (Beta)\n@tarjima_qilaman_robot"
+			}
 		}
 
 class Message_media:
@@ -221,6 +260,35 @@ class Message_media:
 		# send = {'uz' : "✅ Tayyor", 'en' : "✅ Ready", 'ru' : "✅ Готовый"}
 
 		return [[InlineKeyboardButton(text = delet[lang], callback_data = "remove")]]
+
+	def get_setingm(self, lang = 'uz'):
+		change_lang = {'uz' : "♻️ Tilni o'zgartirish", 'en' : "♻️ Change the language", 'ru' : "♻️ Изменить язык"}
+		change_name = {'uz' : "👤 Ismni O'zgartirish", 'ru' : "👤 Изменить имя", 'en' : "👤 Change Name"}
+		version = {'uz' : "🆚 Bo't versiyasi", 'ru' : "🆚 Бот версия", 'en' : "🆚 Bot version"}
+		head_menu = {'uz' : "🏠 Bosh sahifaga", 'en' : "🏠 Back to Home", 'ru' : "🏠 На главную"}
+
+		return [[KeyboardButton(text = change_lang[lang]), KeyboardButton(text = change_name[lang])], [KeyboardButton(text = version[lang])], [KeyboardButton(text = head_menu[lang])]]
+
+
+	def get_inlang(self, lang = 'uz'):
+		buttons = {'uz' : ["🇺🇿 o'zbekcha", "🇷🇺 Ruscha", "🇬🇧 Inglizcha"], 'ru' : ["🇺🇿 узбекский", "🇷🇺 Русский", "🇬🇧 Английский"], 'en' : ["🇺🇿 Uzbek", "🇷🇺 Russian", "🇬🇧 English"]}
+		data = ["set_uz", 'set_ru', 'set_en']
+		
+		return [[InlineKeyboardButton(text = buttons[lang][0], callback_data = data[0]), InlineKeyboardButton(text = buttons[lang][1], callback_data = data[1]), InlineKeyboardButton(text = buttons[lang][2], callback_data = data[2])]] 
+
+	def get_change_lang(self, lang = 'uz'):
+		change_lang = {'uz' : "♻️ Tilni o'zgartirish", 'en' : "♻️ Change the language",'ru' : "♻️ Изменить язык"}
+		use = {'uz' : "✅ Qo'lash", 'ru' : "✅ применять", 'en' : '✅ Apply'}
+
+		return [[InlineKeyboardButton(text = change_lang[lang], callback_data = 'rechose'), InlineKeyboardButton(text = use[lang], callback_data = 'aply')]]
+
+	def get_change_name_buttons(self, lang = 'uz'):
+		appl = {'uz' : "✅ Qo'lash", 'ru' : "✅ применять", 'en' : '✅ Apply'}
+		nont = {'uz' : "❌ Bekor qilish", 'en' : "❌ cancel", 'ru' : "❌ Отмена"}
+
+		return [[KeyboardButton(text = appl[lang]), KeyboardButton(text = nont[lang])]]
+
+
 
 if __name__ == '__main__':
     pass
