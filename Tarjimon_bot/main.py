@@ -118,7 +118,7 @@ def core_function(update, context):
 				database.update_user_data(user_data)
 
 			elif message in ["🛡 Oxford Definition", "🛡 Оксфорд дефинитион"]:
-				print("Oxford Definition")
+				update.message.reply_text("Building ...")
 
 			elif message in ["Aloqa 📲", "контакт 📲", "Contact 📲"]:
 				buttons = message_media.get_contact_menu(lang = lang)
@@ -140,6 +140,11 @@ def core_function(update, context):
 				database.update_user_data(user_data)
 
 
+			elif message in ["📈 statistika", "📈 статистика", "📈 statistics"]:
+				update.message.reply_text("Building ...")
+
+			elif message in ["🤖📂 malumot", "🤖📂 информация", "🤖📂 info"]:
+				update.message.reply_text("Building ...")
 
 		# UZ->ENG  MENU
 		elif where == "uzent_menu":
