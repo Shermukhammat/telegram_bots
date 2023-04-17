@@ -4,6 +4,8 @@ from database import Bot_database
 from media import Message_media, CONTEXT
 from  translator import translator
 from test import RAM
+from oxford import getDefination
+
 """
 v.3.0.0
 """
@@ -118,7 +120,12 @@ def core_function(update, context):
 				database.update_user_data(user_data)
 
 			elif message in ["🛡 Oxford Definition", "🛡 Оксфорд дефинитион"]:
-				update.message.reply_text("Building ...")
+				buttons = message_media.get_oxfor_menu(lang = lang)
+				update.message.reply_text(text = CONTEXT['oxfor_menu'][lang], reply_markup  = ReplyKeyboardMarkup(buttons, resize_keyboard = True, one_time_keyboard = True))
+    
+    			# update user data
+				user_data["user_data"]['where'] = "oxfor_menu"
+				database.update_user_data(user_data)
 
 			elif message in ["Aloqa 📲", "контакт 📲", "Contact 📲"]:
 				buttons = message_media.get_contact_menu(lang = lang)
@@ -290,7 +297,6 @@ def core_function(update, context):
 					update.message.reply_text("Iltimos birinchi xabar jo'nating")
 
 
-
 			else:
 				message_data = update.message
 				message_id = message_data['message_id']
@@ -367,6 +373,23 @@ def core_function(update, context):
 				buttons = message_media.get_change_name_buttons(lang = lang)
 
 				update.message.reply_text(sen_message, reply_markup = ReplyKeyboardMarkup(buttons, resize_keyboard = True, one_time_keyboard = True))
+
+		elif where == 'oxfor_menu':
+			if message in ["🏠 Bosh sahifaga", "🏠 Back to Home", "🏠 На главную"]:
+				buttons = message_media.get_uh_menu(lang = lang)
+				head_menu = CONTEXT['head_menu'][lang]
+
+				update.message.reply_text(text = head_menu, reply_markup =  ReplyKeyboardMarkup(buttons, resize_keyboard = True, one_time_keyboard = True))
+
+				# updating user data
+				user_data["user_data"]['where'] = "head_menu"
+				database.update_user_data(user_data)
+    
+			elif message in ["📑 qo'lanma", "📑 руководство", "📑  manual"]:
+				update.message.reply_text("Coming soon...")
+
+			else:
+				update.message.reply_text(getDefination(message))
 
 
 	else:

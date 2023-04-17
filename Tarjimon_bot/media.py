@@ -161,6 +161,12 @@ CONTEXT = {'you_chose_lang':
 				'uz' : "Bot versiyasi 3.0.0 (Beta)\n@tarjima_qilaman_robot",
 				'ru' : "Версия бота 3.0.0 (бета-версия)\n@tarjima_qilaman_robot",
 				'en' : "Bot Version 3.0.0 (Beta)\n@tarjima_qilaman_robot"
+			},
+		"oxfor_menu" :
+			{
+				'en' : "Menu Oxfor:",
+				'uz' : "Oxford menusi:",
+				"ru" : "Оксфорд меню:"
 			}
 		}
 
@@ -249,11 +255,11 @@ class Message_media:
 		return [[KeyboardButton(text = admin[lang]), KeyboardButton(text = coder[lang])], [KeyboardButton(text = head_menu[lang])]]
 
 	def admin_chatm(self, lang = "uz"):
-        	send = {'uz' : "🚀 xabarlarni yuborish", 'en' : "🚀 send messages",'ru' : "🚀 отправлять сообщения"}
-        	back = {'uz' : "⬅️ orqaga", 'ru' : "⬅️ назад", 'en' : "⬅️ back"}
-        	head_menu = {'uz' : "🏠 Bosh sahifaga", 'en' : "🏠 Back to Home", 'ru' : "🏠 На главную"}
+		send = {'uz' : "🚀 xabarlarni yuborish", 'en' : "🚀 send messages",'ru' : "🚀 отправлять сообщения"}
+		back = {'uz' : "⬅️ orqaga", 'ru' : "⬅️ назад", 'en' : "⬅️ back"}
+		head_menu = {'uz' : "🏠 Bosh sahifaga", 'en' : "🏠 Back to Home", 'ru' : "🏠 На главную"}
 
-        	return [[KeyboardButton(text = send[lang])], [KeyboardButton(text = back[lang]), KeyboardButton(text = head_menu[lang])]]
+		return [[KeyboardButton(text = send[lang])], [KeyboardButton(text = back[lang]), KeyboardButton(text = head_menu[lang])]]
 
 	def delet_message(self, lang = "uz"):
 		delet = {'uz' : "❌ O'chrish", 'ru' : "❌ Выключать", 'en' : "❌ Turn off"}
@@ -288,6 +294,11 @@ class Message_media:
 
 		return [[KeyboardButton(text = appl[lang]), KeyboardButton(text = nont[lang])]]
 
+	def get_oxfor_menu(self, lang = 'uz'):
+		home = {'uz' : "🏠 Bosh sahifaga", 'en' : "🏠 Back to Home", 'ru' : "🏠 На главную"}
+		manual = {'uz' : "📑 qo'lanma", 'ru' : "📑 руководство", 'en' : "📑  manual"}
+
+		return [[KeyboardButton(text = manual[lang])], [KeyboardButton(text = home[lang])]]
 
 
 if __name__ == '__main__':
