@@ -2,12 +2,9 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from telegram import KeyboardButton, ReplyKeyboardMarkup
 
 API_TOKEN = "6080581500:AAHnIOY5m2wjqjE_uQUDMFAvLBC0L97eo20"
-CHANEL_ID = '-1001942672781'
 
 def start_function(update, context):
-    user_name = update.message.chat.first_name
-    update.message.reply_text(f"Salom {user_name}!")
-    # print(update.message)
+    print(context.bot.get_chat('@kinolarning_bazasi'))
 
 def core_function(update, context):
     pass
