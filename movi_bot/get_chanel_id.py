@@ -4,7 +4,7 @@ from telegram import KeyboardButton, ReplyKeyboardMarkup
 API_TOKEN = "6080581500:AAHnIOY5m2wjqjE_uQUDMFAvLBC0L97eo20"
 
 def start_function(update, context):
-    print(context.bot.get_chat('@kinolarning_bazasi'))
+    print(context.bot.get_chat('@blahblat'))
 
 def core_function(update, context):
     pass

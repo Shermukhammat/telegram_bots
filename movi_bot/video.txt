@@ -1,0 +1,47 @@
+{
+'photo': [], 
+'caption_entities': [], 
+'chat': 
+    {
+    'first_name': 'SHermukhammad', 
+    'last_name': 'Temirov', 
+    'id': 1661189380, 
+    'username': 'shermukhammad_temirov', 
+    'type': 'private'
+    }, 
+'channel_chat_created': False, 
+'supergroup_chat_created': False, 
+'group_chat_created': False, 
+'entities': [], 
+'new_chat_photo': [], 
+'message_id': 260, 
+'date': 1684050661, '
+delete_chat_photo': False, 
+'new_chat_members': [],
+'video': 
+    {
+    'file_unique_id': 'AgADYAYAAmxRqUo', 
+    'file_name': 'JUSTaFiLeewxgfcpqnv.mp4', 
+    'duration': 3659, 
+    'width': 1920, 
+    'file_id': 'BAACAgIAAxkDAAIBBGRgkuVo9E-sqY0dTtCcXC0SmtsXAAJgBgACbFGpSmoxUbzbOm5RLwQ', 
+    'file_size': 143097196, 
+    'thumb': 
+        {
+        'file_unique_id': 'AQADYAYAAmxRqUpy', 
+        'width': 320, 
+        'file_id': 'AAMCAgADGQMAAgEEZGCS5Wj0T6ypjR1O0JxcLRKa2xcAAmAGAAJsUalKajFRvNs6blEBAAdtAAMvBA', 
+        'file_size': 10456, 
+        'height': 320
+        }, 
+    'mime_type': 'video/mp4', 
+    'height': 1080
+    }, 
+'from': 
+    {
+    'is_bot': True, 
+    'username': 'movi_finder_bot', 
+    'first_name': 'Kino Top Bot', 
+    'id': 6080581500
+    }
+}

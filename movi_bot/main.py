@@ -1,9 +1,14 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, InlineQueryHandler
 from telegram import KeyboardButton, ReplyKeyboardMarkup, InlineQueryResultArticle, InputTextMessageContent, InlineQueryResultCachedVideo
+from db import Database
+import time
 
 API_TOKEN = "6080581500:AAHnIOY5m2wjqjE_uQUDMFAvLBC0L97eo20"
 CHANEL_ID = '-1001942672781'
 ADMINS = [1661189380]
+
+database = Database('database.db')
+database.conect()
 
 def start_function(update, context):
     user_name = update.message.chat.first_name
@@ -13,22 +18,35 @@ def start_function(update, context):
 def core_function(update, context):
     # print(update)
     pass
-
+global n
+n = 0
 def video_handler(update, context):
     user_id = update.message.chat.id
-    
-    if user_id in ADMINS:
-        video = update.message.video
-        if int(video.file_size / (1024*1024)) > 200:
-            caption = update.message.caption
-            vm_info = context.bot.send_video(CHANEL_ID, video, caption = caption)
 
-            message_id = vm_info.message_id
-            file_size = vm_info.video.file_size
-            file_id = vm_info.video.file_id
-            # print(vm_info)
-        else:
-            update.message.reply_text("Video xajmi 200 Mb dan kichkina!")
+    if user_id in ADMINS:
+        # print(loop)
+        if n == 20:
+            print("Sleep 10 ...")
+            n = 0
+            time.sleep(10)
+        n+=1
+
+        
+        try:
+            video = update.message.video
+            if int(video.file_size / (1024*1024)) > 100:
+                caption = update.message.caption
+                vm_info = context.bot.send_video(CHANEL_ID, video, caption = caption)
+
+                message_id = vm_info.message_id
+                file_size = vm_info.video.file_size
+                file_id = vm_info.video.file_id
+                database.add_movi(caption, file_id = file_id, size = file_size, message_id = message_id)
+                # print(vm_info)
+            else:
+                update.message.reply_text("Video xajmi 100 Mb dan kichkina!")
+        except:
+            print("! EROR")
 
 
     # print(update.message)
