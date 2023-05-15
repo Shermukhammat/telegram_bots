@@ -12,7 +12,7 @@ class Database:
         conection = sqlite3.connect(self.name)
         cursor = conection.cursor()
         
-        cursor.execute(f"CREATE TABLE IF NOT EXISTS {self.movies} ('message_id' INTEGER, 'file_id', 'caption', 'file_size' INTEGER);")
+        cursor.execute(f"CREATE TABLE IF NOT EXISTS {self.movies} ('message_id' INTEGER, 'file_id', 'caption', 'file_size' INTEGER, 'id' INTEGER PRIMARY KEY);")
         cursor.execute(f"CREATE TABLE IF NOT EXISTS {self.users} ('user_id' INTEGER, 'user_name');")
 
         conection.commit()
@@ -29,14 +29,18 @@ class Database:
         conection = sqlite3.connect(self.name)
         cursor = conection.cursor()
 
-        cursor.execute(f"INSERT INTO {self.movies} VALUES (?, ?, ?, ?)", (message_id, file_id, caption, size))
-
+        try:
+            caption = caption.replace('"', "\'")
+            cursor.execute(f"INSERT INTO {self.movies} ('message_id', 'file_id', 'caption', 'file_size') VALUES ({message_id}, '{file_id}', \"{caption}\", {size});")
+            print("New movi added ...")
+        except:
+            print("Datbase Error ...")
+        
         conection.commit()
         conection.close()
-        print("New movi added")
-        
 
 
 if __name__ == '__main__':
     database = Database('database.db')
     database.conect()
+    database.add_movi('kino"', message_id = 1, size = 0, file_id = 'btenvu2g556ivn')

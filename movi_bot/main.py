@@ -2,6 +2,7 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, Inlin
 from telegram import KeyboardButton, ReplyKeyboardMarkup, InlineQueryResultArticle, InputTextMessageContent, InlineQueryResultCachedVideo
 from db import Database
 import time
+from random import randint
 
 API_TOKEN = "6080581500:AAHnIOY5m2wjqjE_uQUDMFAvLBC0L97eo20"
 CHANEL_ID = '-1001942672781'
@@ -18,20 +19,20 @@ def start_function(update, context):
 def core_function(update, context):
     # print(update)
     pass
-global n
+
 n = 0
 def video_handler(update, context):
+    global n
+    n+=1
     user_id = update.message.chat.id
+    if n == 19:
+        n = 0
+        sleep = randint(30, 120)
+        
+        print(f"sleep {sleep} second...")
+        time.sleep(sleep)
 
     if user_id in ADMINS:
-        # print(loop)
-        if n == 20:
-            print("Sleep 10 ...")
-            n = 0
-            time.sleep(10)
-        n+=1
-
-        
         try:
             video = update.message.video
             if int(video.file_size / (1024*1024)) > 100:
@@ -44,9 +45,10 @@ def video_handler(update, context):
                 database.add_movi(caption, file_id = file_id, size = file_size, message_id = message_id)
                 # print(vm_info)
             else:
-                update.message.reply_text("Video xajmi 100 Mb dan kichkina!")
+                update.message.reply_text("The video size is smoller then 100 Mb")
+                print("! The video size is smoller then 100 Mb ")
         except:
-            print("! EROR")
+            print(print('Video handler EROR ...'))
 
 
     # print(update.message)
