@@ -3,7 +3,7 @@ from fuzzywuzzy import fuzz, process
 import heapq
 
 
-def search_movi(match, titles, movies_dataset):
+def search_movi(match, titles, movies_dataset, get = 10):
     scores = {}
     lis = []
 
@@ -15,7 +15,7 @@ def search_movi(match, titles, movies_dataset):
         n+=1
 
     respons = []
-    Nlargest = heapq.nlargest(10, lis)
+    Nlargest = heapq.nlargest(get, lis)
     for key, value in scores.items():
         if value in Nlargest:
             respons.append(movies_dataset[key])
@@ -23,7 +23,7 @@ def search_movi(match, titles, movies_dataset):
 
 if __name__ == '__main__':
     titles, movies_dataset, line_count = load_movi_data()
-    movies = search_movi("xalq", titles, movies_dataset)
+    movies = search_movi("3-kvartil", titles, movies_dataset, get=20)
     for movie in movies:
         print(movie['title'])
 
