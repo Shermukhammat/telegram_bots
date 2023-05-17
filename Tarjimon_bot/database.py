@@ -71,7 +71,7 @@ class Bot_database:
 		"""
 		This function can add user;
 		params:
-			user_id : int (unicalni);
+			user_id : int (unicalnidatabase);
 			user_name : str;
 			lang : str (uz/ru/en);
 		"""

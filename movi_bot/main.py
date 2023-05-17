@@ -3,6 +3,8 @@ from telegram import KeyboardButton, ReplyKeyboardMarkup, InlineQueryResultArtic
 from db import Database
 import time
 from random import randint
+from Google import search_movi
+from PyMemory import load_movi_data
 
 API_TOKEN = "6080581500:AAHnIOY5m2wjqjE_uQUDMFAvLBC0L97eo20"
 CHANEL_ID = '-1001942672781'
@@ -24,31 +26,31 @@ n = 0
 def video_handler(update, context):
     global n
     n+=1
-    user_id = update.message.chat.id
-    if n == 19:
-        n = 0
-        sleep = randint(30, 120)
+    # user_id = update.message.chat.id
+    # if n == 19:
+    #     n = 0
+    #     sleep = randint(30, 120)
         
-        print(f"sleep {sleep} second...")
-        time.sleep(sleep)
+    #     print(f"sleep {sleep} second...")
+    #     time.sleep(sleep)
 
-    if user_id in ADMINS:
-        try:
-            video = update.message.video
-            if int(video.file_size / (1024*1024)) > 100:
-                caption = update.message.caption
-                vm_info = context.bot.send_video(CHANEL_ID, video, caption = caption)
+    # if user_id in ADMINS:
+    #     try:
+    #         video = update.message.video
+    #         if int(video.file_size / (1024*1024)) > 100:
+    #             caption = update.message.caption
+    #             vm_info = context.bot.send_video(CHANEL_ID, video, caption = caption)
 
-                message_id = vm_info.message_id
-                file_size = vm_info.video.file_size
-                file_id = vm_info.video.file_id
-                database.add_movi(caption, file_id = file_id, size = file_size, message_id = message_id)
-                # print(vm_info)
-            else:
-                update.message.reply_text("The video size is smoller then 100 Mb")
-                print("! The video size is smoller then 100 Mb ")
-        except:
-            print(print('Video handler EROR ...'))
+    #             message_id = vm_info.message_id
+    #             file_size = vm_info.video.file_size
+    #             file_id = vm_info.video.file_id
+    #             database.add_movi(caption, file_id = file_id, size = file_size, message_id = message_id)
+    #             # print(vm_info)
+    #         else:
+    #             update.message.reply_text("The video size is smoller then 100 Mb")
+    #             print("! The video size is smoller then 100 Mb ")
+    #     except:
+    #         print(print('Video handler EROR ...'))
 
 
     # print(update.message)
@@ -60,18 +62,29 @@ def video_handler(update, context):
     # message_info = context.bot.send_video(chat_id, video)
     # print(message_info)
 
+titles, movies_dataset, line_count = load_movi_data()
 def query(update, context):
     query = update.inline_query.query
-    # print(query)
-    result = InlineQueryResultCachedVideo(
-        id= '1',
-        video_file_id = 'BAACAgIAAxkDAAIBBGRgkuVo9E-sqY0dTtCcXC0SmtsXAAJgBgACbFGpSmoxUbzbOm5RLwQ',
-        title='Your Video Title',
-        caption = "Bu kino ancha yasxshi!"
-    )
+    
+    movies = search_movi(query, titles, movies_dataset)
+    answers = []
+    id = 0
+    for movie in movies:
+        id+=1
+        answers.append(InlineQueryResultCachedVideo(id = str(id),
+                                                    video_file_id = movie['file_id'],
+                                                    caption = movie['caption'],
+                                                    title = movie['title'],
+                                                    description = movie['caption']))
+    # result = InlineQueryResultCachedVideo(
+    #     id= '1',
+    #     video_file_id = 'BAACAgIAAxkDAAIBBGRgkuVo9E-sqY0dTtCcXC0SmtsXAAJgBgACbFGpSmoxUbzbOm5RLwQ',
+    #     title='Your Video Title',
+    #     caption = "Bu kino ancha yasxshi!"
+    # )
 
     # Send the results to the user
-    update.inline_query.answer([result])
+    update.inline_query.answer(answers)
 
 def main():
     updater = Updater(token = API_TOKEN)
