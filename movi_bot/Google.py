@@ -1,29 +1,32 @@
 from PyMemory import load_movi_data
 from fuzzywuzzy import fuzz, process
 import heapq
+import time
 
 
-def search_movi(match, titles, movies_dataset, get = 10):
-    scores = {}
-    lis = []
+def search_movi(match, titles = None, limt = 10):
+    titles
+    scores, indexs = [], []
 
-    n = 0
     for title in titles:
-        score = fuzz.ratio(match, title.lower())
-        scores[n] = score
-        lis.append(score)
-        n+=1
+        scores.append(fuzz.ratio(match.lower(), title.lower()))
+        
+    for n in range(limt):
+        maxs = max(scores)
+        indexs.append(scores.index(maxs))
+        scores.remove(maxs)
+    return indexs
 
-    respons = []
-    Nlargest = heapq.nlargest(get, lis)
-    for key, value in scores.items():
-        if value in Nlargest:
-            respons.append(movies_dataset[key])
-    return respons
+    
 
 if __name__ == '__main__':
+    # start_time = time.time()
     titles, movies_dataset, line_count = load_movi_data()
-    movies = search_movi("3-kvartil", titles, movies_dataset, get=20)
-    for movie in movies:
-        print(movie['title'])
+    start_time = time.time()
+
+    indexs = search_movi("zorro", titles = titles)
+    for index in indexs:
+        print(movies_dataset[index]['title'])
+
+    print(f"{time.time() - start_time}")
 
