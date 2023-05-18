@@ -5,6 +5,7 @@ import time
 from random import randint
 from Google import search_movi
 from PyMemory import load_movi_data
+import requests
 
 API_TOKEN = "6080581500:AAHnIOY5m2wjqjE_uQUDMFAvLBC0L97eo20"
 CHANEL_ID = '-1001942672781'
@@ -27,24 +28,55 @@ def video_handler(update, context):
     pass
 
 #AAMCAQADGQEAAg7hZGS6qOSrBko3wcVvJ2KEGrqE-LMAApkCAAIhxDlH6O_gdxKk1vkBAAdtAAMvBA
+
 titles, movies_dataset, line_count = load_movi_data()
+response = requests.get('https://picsum.photos/200')
+response = response.url
+
 def query(update, context):
     query = update.inline_query.query
-    movies = search_movi(query, titles, movies_dataset)
-    answers = []
-    for movie in movie:
-        answers.append()
+    if len(query) > 3:
+        global movies_dataset, titles, response
+        indexs = search_movi(query, titles = titles, limt = 10)
+
+        answers = []
+        n = 0
+        for index in indexs:
+            movie = movies_dataset[index]
+            answers.append(InlineQueryResultArticle(id = str(n), 
+                                        title = movie['title'],
+                                        description = movie['caption'],
+                                        input_message_content = InputTextMessageContent(f"/get {index}"),
+                                        thumb_url = response))
+            n+=1
     
-    
- 
+        update.inline_query.answer(answers)
+
+def get_movie(update, context):
+    global movies_dataset
+    id = update.message.chat.id
+    message_id = update.message.message_id
+    message = update.message.text
+    index = message[5:]
+
+    context.bot.delete_message(chat_id = id, message_id = message_id)
+    if index.isdigit():
+        movie = movies_dataset[int(index)]
+        context.bot.send_video(chat_id = id, video = movie['file_id'], caption = movie['caption'])
+
+        
+
     
 def main():
     updater = Updater(token = API_TOKEN)
     dispatcher = updater.dispatcher
 
     dispatcher.add_handler(CommandHandler('start', start_function))
+    dispatcher.add_handler(CommandHandler('get', get_movie))
+
     dispatcher.add_handler(MessageHandler(Filters.text, core_function))
     dispatcher.add_handler(MessageHandler(Filters.video, video_handler))
+
     dispatcher.add_handler(InlineQueryHandler(query))
 
     updater.start_polling()
