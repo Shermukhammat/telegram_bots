@@ -30,26 +30,31 @@ def video_handler(update, context):
 #AAMCAQADGQEAAg7hZGS6qOSrBko3wcVvJ2KEGrqE-LMAApkCAAIhxDlH6O_gdxKk1vkBAAdtAAMvBA
 
 titles, movies_dataset, line_count = load_movi_data()
-response = requests.get('https://picsum.photos/200')
-response = response.url
+# response = requests.get('https://picsum.photos/100/100')
+# response = response.url
 
 def query(update, context):
     query = update.inline_query.query
     if len(query) > 3:
-        global movies_dataset, titles, response
-        indexs = search_movi(query, titles = titles, limt = 10)
+        global movies_dataset, titles
+        indexs = search_movi(query, titles = titles, limt = 30)
 
         answers = []
         n = 0
         for index in indexs:
+            # response = requests.get('https://picsum.photos/100/100')
+            # response = response.url
             movie = movies_dataset[index]
             answers.append(InlineQueryResultArticle(id = str(n), 
                                         title = movie['title'],
                                         description = movie['caption'],
                                         input_message_content = InputTextMessageContent(f"/get {index}"),
-                                        thumb_url = response))
+                                        thumb_url = f'https://picsum.photos/id/{randint(10, 500)}/100/100',
+                                        thumb_height = 100,
+                                        thumb_width = 200))
             n+=1
-    
+        #     print(n)
+        # print("answer")
         update.inline_query.answer(answers)
 
 def get_movie(update, context):
