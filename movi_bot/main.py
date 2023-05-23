@@ -50,6 +50,7 @@ def query(update, context):
                                         description = movie['caption'],
                                         input_message_content = InputTextMessageContent(f"/get {index}"),
                                         thumb_url = f'https://picsum.photos/id/{randint(10, 500)}/100/100',
+                                        # thumb_url = f'127.0.0.1:8000/get',
                                         thumb_height = 100,
                                         thumb_width = 200))
             n+=1
