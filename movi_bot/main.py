@@ -1,10 +1,10 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, InlineQueryHandler
 from telegram import KeyboardButton, ReplyKeyboardMarkup, InlineQueryResultArticle, InputTextMessageContent, InlineQueryResultCachedVideo, InlineQueryResultPhoto, InputMessageContent, InputMediaPhoto
-from db import Database
+from movie_finder_bot.db import Database
 import time
 from random import randint
-from Google import search_movi
-from PyMemory import load_movi_data
+from movie_finder_bot.Google import search_movi
+from movie_finder_bot.PyMemory import load_movi_data
 import requests
 
 API_TOKEN = "6080581500:AAHnIOY5m2wjqjE_uQUDMFAvLBC0L97eo20"
