@@ -4,23 +4,24 @@ from aiogram import Bot, Dispatcher, executor, types
 from aiogram.bot.api import TelegramAPIServer
 from aiogram.types import ContentType
 
-API_TOKEN = "6190720556:AAEovyT5jKCcr3C79ZifV8AQ54dIXIOE-cY"
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 
 # Create private Bot API server endpoints wrapper
-local_server = TelegramAPIServer.from_base('http://localhost')
+local_server = TelegramAPIServer.from_base('http://127.0.0.1:8081')
 
 # Initialize bot with using local server
-bot = Bot(token=API_TOKEN, server=local_server)
+bot = Bot(token=API_TOKEN)
 # ... and dispatcher
 dp = Dispatcher(bot)
 
 
-@dp.message_handler(content_types=ContentType.ANY)
-async def echo(message: types.Message):
-    await message.copy_to(message.chat.id)
+@dp.message_handler(commands = "start")
+async def echo(update: types.Message):
+     with open("test.mp4", "rb") as video_file:
+        await bot.send_video(update.from_user.id, video_file, caption = "This is video bigger then 50 mb. That was amaizing!")
 
 
 if __name__ == '__main__':
