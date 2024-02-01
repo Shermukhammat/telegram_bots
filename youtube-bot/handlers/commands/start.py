@@ -1,4 +1,4 @@
-from loader import dp, db, types, media_text
+from loader import dp, db, types, context, buttons, inline
 from aiogram.dispatcher import FSMContext
 
 
@@ -16,12 +16,19 @@ async def start_message_handler(update : types.Message):
         
 
     else:
+        if update.from_user.language_code in ['uz', 'en', 'ru']:
+            lang = update.from_user.language_code
+        else:
+            lang = 'en'
+        
         db.registir(id = update.from_user.id, 
                     name = update.from_user.first_name, 
-                    lang = update.from_user.language_code)
+                    lang = 'uz')
         
         # text = context.welcome_user(db.users[update.from_user.id])
         # print(text)
         # print(db.users[update.from_user.id])
-        # await update.answer(context.welcome_user(db.users[update.from_user.id]))
+        user = db.users[update.from_user.id]
+        await update.answer(text = context.welcome_user(user), 
+                            reply_markup = inline.start_presed(lang = user['lang']), parse_mode = 'html')
     

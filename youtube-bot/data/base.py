@@ -1,10 +1,11 @@
 import sqlite3
 from datetime import datetime
 import pytz 
+import json
 
 
 class DataBase:
-    def __init__(self, path : str = "data/data.db") -> None:
+    def __init__(self, path : str = "data/data.db", settings_path : str = "data/data.json") -> None:
         self.path = path
         
         conection = sqlite3.connect(self.path)
@@ -23,7 +24,15 @@ class DataBase:
         self.admins = self.get_admins()
     
 
-        
+        self.settings_path = settings_path
+
+        js = open(settings_path, 'r')
+        self.data = json.loads(js.read())
+        js.close()
+
+    def update(self):
+        js = open(self.file, 'w')
+        js.write(json.dumps(self.data))
     
 
     def get_users(self) -> dict:
