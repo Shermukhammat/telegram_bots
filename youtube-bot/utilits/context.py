@@ -11,6 +11,24 @@ class ConText:
                 'en' : f"🤖 Hello {user['name']}. 📥 Send me video link from Youtube to download video"}
         
         return data.get(user['lang'])
+    
+    def change_lang(self, lang : dict) -> str:
+        data = {'uz' : f"Ilimos, Tilni tanlang",
+                'ru' : "Пожалуйста, выберите язык",
+                'en' : "Please, select a language"}
+
+        return data.get(lang)
+    
+    def head_menu(self, lang : str = None): 
+        data = {'uz' : "🎛 Bosh menu",
+                'ru' : "🎛 Главное меню",
+                'en' : "🎛 Main menu"}
+        
+        return data.get(lang)
+    
+
+    
+    
 
 
 

@@ -120,7 +120,30 @@ class DataBase:
         zone_time = datetime.now(zone_tz)
 
         return zone_time.strftime(f"%d.%m.%Y %H:%M")
+    
 
+    def update_user_lang(self, id : int = None, lang : str = None):
+        conection = sqlite3.connect(self.path)
+        cursor = conection.cursor()
+
+        cursor.execute(f"UPDATE users SET lang = '{lang}' WHERE id == {id};")
+        self.users[id]['lang'] = lang 
+
+        conection.commit()
+        conection.close()
+
+    
+    def get_user_info(self, id : int = None) -> str:
+        user = self.users[id]
+        if user['lang'] == 'uz':
+            return f"👤 Foydalanuvchi: {user['name']}  \n⏳ Ro'yxatdan o'tdi: {user['registred']}"
+        
+        elif user['lang'] == 'ru':
+            return f"👤 Пользователь: {user['name']}  \n⏳ Зарегистрирован: {user['registred']}"
+        
+        elif user['lang'] == 'en':
+            return f"👤 User: {user['name']}  \n⏳ Registered: {user['registred']}"
+    
 if __name__ == '__main__':
     db = DataBase()
     print(db.now())

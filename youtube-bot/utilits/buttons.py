@@ -6,34 +6,49 @@ class Inline:
     def __init__(self):
         pass
 
-    def start_presed(self, lang : str = 'uz') -> InlineKeyboardMarkup:
-        """This function use for when user first time registred
-
-        Args:
-            lang (str, optional): Buttons language might be 'uz', 'en', 'ru'. Defaults to 'uz'.
-
-        Returns:
-            _type_: InlineKeybordMarkup
-        """
-
-        if lang == "uz":
-            return InlineKeyboardMarkup(inline_keyboard = [[InlineKeyboardButton(text = "🌐 Tilni o'zgartirish", callback_data = "change_lang"), 
-                                                            InlineKeyboardButton(text = "📖 Qo'lanma", callback_data = "manual")]])
-        elif lang == 'ru':
-            return InlineKeyboardMarkup(inline_keyboard = [[InlineKeyboardButton(text = "🌐 Изменить язык", callback_data = "change_lang"), 
-                                                            InlineKeyboardButton(text = "📖 Помощь", callback_data = "manual")]])
-        elif lang == 'en':
-            return InlineKeyboardMarkup(inline_keyboard = [[InlineKeyboardButton(text = "🌐 Change language", callback_data = "change_lang"), 
-                                                            InlineKeyboardButton(text = "📖 Manual", callback_data = "manual")]])
+    
 
 
 class Buttons:
     def __init__(self) -> None:
         pass
-    inline = Inline()
+    
+    def language_buttons(self, lang : str = None):
+        if lang == 'uz':
+            return ReplyKeyboardMarkup(keyboard = [[KeyboardButton(text = "🇷🇺 Ruscha"), KeyboardButton(text = "🇬🇧 Inglizcha")],
+                                                            [KeyboardButton(text = "⬅️ Orqaga")]],
+                                                            resize_keyboard = True)
+        
+        elif lang == 'ru':
+            return ReplyKeyboardMarkup(keyboard = [[KeyboardButton(text = "🇺🇿 Узбекский"), KeyboardButton(text = "🇬🇧 Английский")],
+                                                   [KeyboardButton(text = "⬅️ Назад")]],
+                                                   resize_keyboard = True)
+
+        elif lang == 'en':
+            return ReplyKeyboardMarkup(keyboard = [[KeyboardButton(text = "🇷🇺 Russian"), KeyboardButton(text = "🇺🇿 Uzbek")],
+                                                   [KeyboardButton(text = "⬅️ Back")]],
+                                                   resize_keyboard = True)
+    
+    def head_menu(self, lang : str = 'uz'):
+        if lang == 'uz':
+            return ReplyKeyboardMarkup(keyboard = [[KeyboardButton(text = "📖 Qo'lanma"), KeyboardButton(text = "🌐 Tilni o'zgartirish")],
+                                                            [KeyboardButton(text = "📈 Statistika")]],
+                                                            resize_keyboard = True)
+        
+        elif lang == 'ru':
+            return ReplyKeyboardMarkup(keyboard = [[KeyboardButton(text = "📖 Помощь"), KeyboardButton(text = "🌐 Изменить язык")],
+                                                            [KeyboardButton(text = "📈 Статистика")]],
+                                                            resize_keyboard = True)
+
+        elif lang == 'en':
+            return ReplyKeyboardMarkup(keyboard = [[KeyboardButton(text = "📖 Manual"), KeyboardButton(text = "🌐 Change language")],
+                                                            [KeyboardButton(text = "📈 Statistics")]],
+                                                            resize_keyboard = True)
 
 
     
-
+if __name__ == '__main__':
+    buttons = Buttons()
+    print(buttons.head_menu(lang='ru'))
 
 

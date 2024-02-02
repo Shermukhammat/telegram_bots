@@ -1,1 +1,1 @@
-from . import registr_handler
+from . import registr_handler, main_message_handlers, change_lang

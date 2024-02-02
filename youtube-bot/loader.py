@@ -5,7 +5,7 @@ from config import API_TOKEN
 from data.base import DataBase
 from utilits.context import ConText
 from utilits.buttons import Buttons, Inline
-
+from utilits.states import States
 
 local_server = TelegramAPIServer.from_base('http://127.0.0.1:8081')
 storage = MemoryStorage()
@@ -18,3 +18,5 @@ db = DataBase()
 context = ConText()
 buttons = Buttons()
 inline = Inline()
+
+states = States()
