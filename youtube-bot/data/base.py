@@ -14,7 +14,8 @@ class DataBase:
         cursor.execute("""CREATE TABLE IF NOT EXISTS users  (id INTEGER PRIMARY KEY, name, lang, registred);""")
         cursor.execute("""CREATE TABLE IF NOT EXISTS admins  (id INTEGER PRIMARY KEY, name, lang, registred);""")
         
-        cursor.execute("""CREATE TABLE IF NOT EXISTS urls (id INTEGER PRIMARY KEY, url, '144', '240', '360', '480', '720', '1080', '1440', '2160', '4320');""")
+        cursor.execute("""CREATE TABLE IF NOT EXISTS videos (id INTEGER PRIMARY KEY, youtube_id);""")
+        cursor.execute("""CREATE TABLE IF NOT EXISTS resolutions (id INTEGER PRIMARY KEY, video_id INTEGER, resolution, itag INTEGER, lastModified INTEGER, size, telegram_id INTEGER);""")
 
         conection.commit()
         conection.close()
@@ -39,7 +40,7 @@ class DataBase:
         conection = sqlite3.connect(self.path)
         cursor = conection.cursor()
 
-        data =  {user[0] : {'name' : user[1], 'lang' : user[2], 'registred' : user[3]} for user in cursor.execute("SELECT * FROM users;")}
+        data =  {user[0] : {'name' : user[1], 'lang' : user[2], 'registred' : user[3], 'menu' : False} for user in cursor.execute("SELECT * FROM users;")}
 
         conection.commit()
         conection.close()
@@ -143,6 +144,8 @@ class DataBase:
         
         elif user['lang'] == 'en':
             return f"👤 User: {user['name']}  \n⏳ Registered: {user['registred']}"
+        
+    
     
 if __name__ == '__main__':
     db = DataBase()
