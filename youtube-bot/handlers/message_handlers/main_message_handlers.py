@@ -1,6 +1,5 @@
-from loader import db, dp, bot, types, inline, buttons, context, states
+from loader import db, dp, bot, types, inline, buttons, context, states, is_url, ytb
 from aiogram.dispatcher import FSMContext
-
 
 @dp.message_handler()
 async def main_message_hanler(update : types.Message, state : FSMContext):
@@ -11,8 +10,25 @@ async def main_message_hanler(update : types.Message, state : FSMContext):
             await update.answer(text = context.change_lang(lang = user['lang']), reply_markup = buttons.language_buttons(lang = user['lang']))
 
         
+        
+
         else:
-            await update.answer(text = context.head_menu(lang = user['lang']), 
+            url = is_url(update.text)
+            if url:
+                status, raise_id = ytb.check_availability(url)
+                if status:
+                    await update.answer("Valid")
+
+                else:
+                    await update.reply(context.show_url_status(raised = raise_id, lang = user['lang']))
+                
+                
+                # else:
+                #     await update.reply(text = context.this_invalid_url(lang = user['lang']))
+                
+            elif user['menu'] == False:
+                user['menu'] = True
+                await update.answer(text = context.head_menu(lang = user['lang']), 
                                 reply_markup = buttons.head_menu(lang = user['lang']))
     
     elif db.is_admin(id = update.from_user.id):
