@@ -18,7 +18,9 @@ class ConText:
                     "live" : "Please try again after the live video ended", 
                     "private" : "This is private video", 
                     "invalid" : "Invalid url"}}
-    
+        self.__creat_video_caption__ = {'uz' : '\n\nYuklab olish sifatni tanlang 👇🏻',
+                                        'ru' : "\n\nВыберите качество загрузки 👇🏻",
+                                        "en" : "\n\nSelect download quality 👇🏻"}
     def welcome_user(self, user : dict) -> str:
         data = {'uz' : f"🤖 Assalomu alykum {user['name']} xush kelibsiz. 📥Video yuklash uchun menga Youtube dan video linkni jo'nating",
                 'ru': f"🤖 Здравствуйте, {user['name']}. 📥 Отправьте мне ссылку на видео с Youtube, чтобы скачать видео", #🌐🏁🇬🇧🇷🇺🇺🇿
@@ -47,13 +49,23 @@ class ConText:
                 'en' : "❌ Этот URL-адрес недействителен"}
         
         return data.get(lang)
+
+
     
 
     def show_url_status(self, raised : str = None, lang : str = 'uz'):
         return self.__show_url_status__[lang].get(raised)
 
     
-    
+    def creat_video_caption(self, title : str = None, resolutions : list = None, data : dict = None, chanel_name : str = "Noname chanel", lang : str = 'uz'):
+        context = f"📽 {title}"
+        context += f"\n📡 {chanel_name}\n\n"
+
+        for resolution in resolutions:
+                context += f"\n⚡️ <b>{resolution} : {data[resolution]['size']} Mb</b>"
+        # context += f"\n🎧  <b>Mp3 : {data['audio']['size']} Mb</b>"
+
+        return context + self.__creat_video_caption__[lang]
 
 
 

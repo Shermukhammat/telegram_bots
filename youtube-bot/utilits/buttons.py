@@ -4,8 +4,34 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeybo
 
 class Inline:
     def __init__(self):
-        pass
+        self.resolutions_template = ['144p', '240p', '360p', '480p', '720p', '1080p', '1440p']
+    
+    def video_resolotion_buttons(self, resolutions : list = None, id : str = None):
+        if len(resolutions) <= 3:
+            buttons = [[InlineKeyboardButton(text = f"📹 {resolution}", callback_data = f"get_video?{id}&{resolution}") for resolution in resolutions],
+                        [InlineKeyboardButton(text = "🎵 mp3", callback_data = f"get_music?{id}")],
+                        [InlineKeyboardButton(text = "❌", callback_data = "remove")]]
 
+            return InlineKeyboardMarkup(inline_keyboard = buttons)
+        elif len(resolutions) <= 6:
+            buttons = [[InlineKeyboardButton(text = f"📹 {resolution}", callback_data = f"get_video?{id}&{resolution}") for resolution in resolutions[:3]],
+                        [InlineKeyboardButton(text = f"📹 {resolution}", callback_data = f"get_video?{id}&{resolution}") for resolution in resolutions[3:]],
+                        [InlineKeyboardButton(text = "🎵 mp3", callback_data = f"get_music?{id}")],
+                        [InlineKeyboardButton(text = "❌", callback_data = "remove")]]
+
+            return InlineKeyboardMarkup(inline_keyboard = buttons)
+
+        elif len(resolutions) <= 8:
+            buttons = [[InlineKeyboardButton(text = f"📹 {resolution}", callback_data = f"get_video?{id}&{resolution}") for resolution in resolutions[:3]],
+                        [InlineKeyboardButton(text = f"📹 {resolution}", callback_data = f"get_video?{id}&{resolution}") for resolution in resolutions[3:6]],
+                        [InlineKeyboardButton(text = f"📹 {resolution}", callback_data = f"get_video?{id}&{resolution}") for resolution in resolutions[6:]],
+                        [InlineKeyboardButton(text = "❌", callback_data = "remove")]]
+            buttons[2].append(InlineKeyboardButton(text = "🎵 mp3", callback_data = f"get_music?{id}"))
+
+            return InlineKeyboardMarkup(inline_keyboard = buttons)
+
+
+            
     
 
 
@@ -44,6 +70,9 @@ class Buttons:
             return ReplyKeyboardMarkup(keyboard = [[KeyboardButton(text = "📖 Manual"), KeyboardButton(text = "🌐 Change language")],
                                                             [KeyboardButton(text = "📈 Statistics")]],
                                                             resize_keyboard = True)
+
+    
+    
 
 
     

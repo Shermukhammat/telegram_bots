@@ -1,5 +1,8 @@
-from loader import db, dp, bot, types, inline, buttons, context, states, is_url, ytb
+from loader import db, dp, bot, types, inline, buttons, context, states, ytb
 from aiogram.dispatcher import FSMContext
+import re
+from pytube import YouTube
+
 
 @dp.message_handler()
 async def main_message_hanler(update : types.Message, state : FSMContext):
@@ -13,11 +16,26 @@ async def main_message_hanler(update : types.Message, state : FSMContext):
         
 
         else:
-            url = is_url(update.text)
+            url = ytb.is_url(update.text)
             if url:
-                status, raise_id = ytb.check_availability(url)
+                yt = YouTube(url, use_oauth = True)
+                status, raise_id = ytb.check_availability(yt)
                 if status:
-                    await update.answer("Valid")
+                    await bot.delete_message(chat_id = update.from_user.id, message_id = update.message_id)
+                    
+                    data = ytb.get_vide_info(yt)
+                    # print(data)
+                    if data:
+                        await bot.send_photo(chat_id = update.from_user.id, photo = data['thumb'], 
+                        caption = context.creat_video_caption(title = data['title'], 
+                                                              resolutions = data['resolutions'], 
+                                                              data=data,
+                                                              lang = user['lang'],
+                                                              chanel_name = data['channel']),
+                        parse_mode='html',
+                        reply_markup = inline.video_resolotion_buttons(resolutions = data['resolutions'], id = raise_id))
+
+
 
                 else:
                     await update.reply(context.show_url_status(raised = raise_id, lang = user['lang']))
@@ -26,10 +44,10 @@ async def main_message_hanler(update : types.Message, state : FSMContext):
                 # else:
                 #     await update.reply(text = context.this_invalid_url(lang = user['lang']))
                 
-            elif user['menu'] == False:
-                user['menu'] = True
-                await update.answer(text = context.head_menu(lang = user['lang']), 
-                                reply_markup = buttons.head_menu(lang = user['lang']))
+        # elif user['menu'] == False:
+        #     user['menu'] = True
+        #     await update.answer(text = context.head_menu(lang = user['lang']), 
+        #                         reply_markup = buttons.head_menu(lang = user['lang']))
     
     elif db.is_admin(id = update.from_user.id):
         pass
@@ -47,3 +65,5 @@ async def main_message_hanler(update : types.Message, state : FSMContext):
         
         user = db.users[update.from_user.id]
         await update.answer(text = context.welcome_user(user), reply_markup = buttons.head_menu(lang = lang))
+
+

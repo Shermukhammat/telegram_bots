@@ -6,6 +6,7 @@ from data.base import DataBase
 from utilits.context import ConText
 from utilits.buttons import Buttons, Inline
 from utilits.states import States
+from utilits.youtuba import YouTuba
 
 local_server = TelegramAPIServer.from_base('http://127.0.0.1:8081')
 storage = MemoryStorage()
@@ -20,3 +21,4 @@ buttons = Buttons()
 inline = Inline()
 
 states = States()
+ytb = YouTuba(videoSizeLimit = 500)

@@ -19,7 +19,7 @@ if __name__ == '__main__':
     start = time.time()
 
     manual_merge = ManualMerge()
-    manual_merge.merge(video_file='test.mp4', audio_file = 'audio.webm', output_file = 'out_test.mp4')
+    manual_merge.merge(video_file='video.mp4', audio_file = 'audio.webm', output_file = 'out.mp4')
     
     end = time.time()
     print(round(end - start, 1), "sec")
