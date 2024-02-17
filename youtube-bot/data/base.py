@@ -14,7 +14,10 @@ class DataBase:
         cursor.execute("""CREATE TABLE IF NOT EXISTS users  (id INTEGER PRIMARY KEY, name, lang, registred);""")
         cursor.execute("""CREATE TABLE IF NOT EXISTS admins  (id INTEGER PRIMARY KEY, name, lang, registred);""")
         
+        cursor.execute("""CREATE TABLE IF NOT EXISTS traffic (user_id INTEGER PRIMARY KEY, used_traffic);""")        
         cursor.execute("""CREATE TABLE IF NOT EXISTS videos (id INTEGER PRIMARY KEY, youtube_id);""")
+        cursor.execute("""CREATE TABLE IF NOT EXISTS musics (id INTEGER PRIMARY KEY, youtube_id, data_id INTEGER);""")
+
         cursor.execute("""CREATE TABLE IF NOT EXISTS resolutions (id INTEGER PRIMARY KEY, video_id INTEGER, resolution, itag INTEGER, lastModified INTEGER, size, telegram_id INTEGER);""")
 
         conection.commit()
@@ -40,7 +43,7 @@ class DataBase:
         conection = sqlite3.connect(self.path)
         cursor = conection.cursor()
 
-        data =  {user[0] : {'name' : user[1], 'lang' : user[2], 'registred' : user[3], 'menu' : False} for user in cursor.execute("SELECT * FROM users;")}
+        data =  {user[0] : {'name' : user[1], 'lang' : user[2], 'registred' : user[3], 'menu' : False, 'downloading' : False} for user in cursor.execute("SELECT * FROM users;")}
 
         conection.commit()
         conection.close()
@@ -88,7 +91,7 @@ class DataBase:
             cursor = conection.cursor()
 
             cursor.execute(f"INSERT INTO users (id, name, lang, registred) VALUES ({id}, '{name}', '{lang}', '{registred}');") 
-            self.users[id] = {'name' : name, 'lang' : lang, 'registred' : registred} 
+            self.users[id] = {'name' : name, 'lang' : lang, 'registred' : registred, 'menu' : False, 'downloading' : False} 
             print('New user ', name)
 
             conection.commit()
@@ -147,9 +150,41 @@ class DataBase:
         
     
     
+    def is_user_downloanding(self, id : int) -> bool:
+        return not self.users[id]['downloading']
+    
+    def close_user_downlonding(self, id : int):
+        self.users[id]['downloading'] = True
+        
+    def open_user_downlonding(self, id : int):
+        self.users[id]['downloading'] = False
+        
+    def get_youtube_music(self, id : str):
+        conection = sqlite3.connect(self.path)
+        cursor = conection.cursor()
+
+        for row in cursor.execute(f"SELECT data_id FROM musics WHERE youtube_id = '{id}';"):
+            conection.commit()
+            conection.close()  
+            return row[0]
+
+        conection.commit()
+        conection.close()
+    
+    def add_youtube_music(self, id : str = None, data_id : int = 'None'):
+        conection = sqlite3.connect(self.path)
+        cursor = conection.cursor()
+        
+        cursor.execute(f"INSERT INTO musics (youtube_id, data_id) VALUES('{id}', {data_id});")
+        
+        conection.commit()
+        conection.close()
+        
+    
+    
 if __name__ == '__main__':
     db = DataBase()
-    print(db.now())
+    print(db.add_youtube_music(id = 'test', data_id = 99))
     # db.registir(id=1, name="sher2", lang='ru', admin = False)
     
     # print(db.admins)

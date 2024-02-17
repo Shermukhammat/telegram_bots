@@ -1,4 +1,4 @@
-from loader import dp, db, types, context, buttons, inline
+from loader import dp, db, types, context, buttons, inline, queues
 from aiogram.dispatcher import FSMContext
 
 
@@ -33,3 +33,8 @@ async def start_message_handler(update : types.Message, state : FSMContext):
         user = db.users[update.from_user.id]
         await update.answer(text = context.welcome_user(user), reply_markup = buttons.head_menu(lang = lang))
     
+
+
+@dp.message_handler(commands = 'remove', state = "*")
+async def debuger(update : types.Message, state : FSMContext):
+    queues.remove_music_queue(9)

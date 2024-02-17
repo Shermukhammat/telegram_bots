@@ -57,13 +57,13 @@ class ConText:
         return self.__show_url_status__[lang].get(raised)
 
     
-    def creat_video_caption(self, title : str = None, resolutions : list = None, data : dict = None, chanel_name : str = "Noname chanel", lang : str = 'uz'):
+    def creat_video_caption(self, title : str = None, resolutions : list = None, data : dict = None, chanel_name : str = "Noname chanel", lang : str = 'uz', audio_size : bool = None):
         context = f"📽 {title}"
         context += f"\n📡 {chanel_name}\n\n"
 
         for resolution in resolutions:
                 context += f"\n⚡️ <b>{resolution} : {data[resolution]['size']} Mb</b>"
-        # context += f"\n🎧  <b>Mp3 : {data['audio']['size']} Mb</b>"
+        context += f"\n🎧  <b>Mp3 : {audio_size} Mb</b>"
 
         return context + self.__creat_video_caption__[lang]
 

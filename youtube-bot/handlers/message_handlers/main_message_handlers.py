@@ -21,19 +21,22 @@ async def main_message_hanler(update : types.Message, state : FSMContext):
                 yt = YouTube(url, use_oauth = True)
                 status, raise_id = ytb.check_availability(yt)
                 if status:
-                    await bot.delete_message(chat_id = update.from_user.id, message_id = update.message_id)
+                    # await bot.delete_message(chat_id = update.from_user.id, message_id = update.message_id)
                     
-                    data = ytb.get_vide_info(yt)
+                    answer = ytb.getData(yt)
+                    
                     # print(data)
-                    if data:
-                        await bot.send_photo(chat_id = update.from_user.id, photo = data['thumb'], 
-                        caption = context.creat_video_caption(title = data['title'], 
-                                                              resolutions = data['resolutions'], 
+                    if answer:
+                        resolutions, data, audio_data = answer[0], answer[1], answer[2]
+                        await bot.send_photo(chat_id = update.from_user.id, photo = yt.thumbnail_url, 
+                        caption = context.creat_video_caption(title = yt.title, 
+                                                              resolutions = resolutions, 
                                                               data=data,
                                                               lang = user['lang'],
-                                                              chanel_name = data['channel']),
+                                                              chanel_name = yt.author,
+                                                              audio_size = audio_data['size']),
                         parse_mode='html',
-                        reply_markup = inline.video_resolotion_buttons(resolutions = data['resolutions'], id = raise_id))
+                        reply_markup = inline.video_resolotion_buttons(resolutions = resolutions, id = raise_id))
 
 
 

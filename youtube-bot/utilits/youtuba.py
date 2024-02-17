@@ -1,16 +1,16 @@
 from pytube import YouTube, extract
 from pytube.exceptions import LiveStreamError, VideoUnavailable, VideoPrivate
-from requests.models import PreparedRequest
-import requests, re
+# import requests
+import re
+import asyncio
 
 from http.client import IncompleteRead
-import requests.exceptions
+# import requests.exceptions
 
 
 
 class YouTuba:
     def __init__(self, videoSizeLimit : int = 1_900):
-        self.prepared_request = PreparedRequest()
         self.limit = videoSizeLimit 
         self.youtube_url_pattern = r'^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|live\/|v\/)?)([\w\-]+)(\S+)?$'
         
@@ -88,10 +88,10 @@ class YouTuba:
                     itag = format['itag']
                     # print(mim_type, size, 'Mb, itag:', itag)
 
-                    if data != None and data['size'] < size:
+                    if data != None and data['size'] < size and size <= self.limit:
                         data = {'itag' : itag, 'size' : size, 'mimeType' : mim_type, 'lastModified' : format['lastModified']}
                     
-                    elif data == None:
+                    elif data == None and size <= self.limit:
                         data = {'itag' : itag, 'size' : size, 'mimeType' : mim_type, 'lastModified' : format['lastModified']}
             return data
             
@@ -149,6 +149,19 @@ class YouTuba:
                     return data 
             except IncompleteRead:
                 print("Incomplated read")
+                
+    
+    
+    def download_music(self, yt : YouTube) -> bool:
+        # print("downloandig started")
+        data = self._get_audio_info__(yt.streaming_data)
+        if data:
+            stream = yt.streams.get_by_itag(data['itag'])
+            if stream:
+                stream.download(output_path = 'data', filename = f"{yt.title}.mp3")
+                return True
+            
+        
     
 
 
@@ -156,8 +169,5 @@ class YouTuba:
 
 url = f"https://www.youtube.com/live/vQP8AwAFzI8?si=UjiUMv2Qs9SV6Grh"
 
-# print(extract.video_id(url))
-# ytb = YouTuba()
-# print(ytb.check_availability(url))
-# yt = YouTube(url, use_oauth = True)
-# yt.check_availability()
+yt = YouTube(url, use_oauth=True)
+print(yt.title)
