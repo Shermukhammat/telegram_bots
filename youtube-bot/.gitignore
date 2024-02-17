@@ -7,5 +7,5 @@
 /data/data.json 
 /__pycache__
 /env
-/data/data.db
-/data/data.json
+/data.db
+/data.json
