@@ -11,14 +11,16 @@ class DataBase:
         conection = sqlite3.connect(self.path)
         cursor = conection.cursor()
 
-        cursor.execute("""CREATE TABLE IF NOT EXISTS users  (id INTEGER PRIMARY KEY, name, lang, registred);""")
+        cursor.execute("""CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name, lang, registred);""")
         cursor.execute("""CREATE TABLE IF NOT EXISTS admins  (id INTEGER PRIMARY KEY, name, lang, registred);""")
         
-        cursor.execute("""CREATE TABLE IF NOT EXISTS traffic (user_id INTEGER PRIMARY KEY, used_traffic);""")        
+        cursor.execute("""CREATE TABLE IF NOT EXISTS traffic (user_id INTEGER PRIMARY KEY, used_traffic);""") 
+        cursor.execute("""CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY, ytid, task, resolution);""") 
+        
         cursor.execute("""CREATE TABLE IF NOT EXISTS videos (id INTEGER PRIMARY KEY, youtube_id);""")
         cursor.execute("""CREATE TABLE IF NOT EXISTS musics (id INTEGER PRIMARY KEY, youtube_id, data_id INTEGER);""")
 
-        cursor.execute("""CREATE TABLE IF NOT EXISTS resolutions (id INTEGER PRIMARY KEY, video_id INTEGER, resolution, itag INTEGER, lastModified INTEGER, size, telegram_id INTEGER);""")
+        # cursor.execute("""CREATE TABLE IF NOT EXISTS resolutions (id INTEGER PRIMARY KEY, video_id INTEGER, resolution, itag INTEGER, lastModified INTEGER, size, telegram_id INTEGER);""")
 
         conection.commit()
         conection.close()
@@ -171,7 +173,7 @@ class DataBase:
         conection.commit()
         conection.close()
     
-    def add_youtube_music(self, id : str = None, data_id : int = 'None'):
+    def add_youtube_music(self, id : str = None, data_id : int = 'None', last_modified : int = None):
         conection = sqlite3.connect(self.path)
         cursor = conection.cursor()
         
@@ -179,12 +181,26 @@ class DataBase:
         
         conection.commit()
         conection.close()
+    
+    
+    def get_task(self):
+        # SELECT * FROM tasks WHERE task = 'music' LIMIT 1;
+        conection = sqlite3.connect(self.path)
+        cursor = conection.cursor()
         
+        for row in cursor.execute("SELECT * FROM tasks LIMIT 1;"):
+            id, ytid, task, resolution = row[0], row[1], row[2], row[3]
+            
+            cursor.execute(f"DELETE FROM tasks WHERE id = {id};")
+        
+        conection.commit()
+        conection.close()
     
     
 if __name__ == '__main__':
     db = DataBase()
-    print(db.add_youtube_music(id = 'test', data_id = 99))
+    print(db.get_task())
+    # print(db.add_youtube_music(id = 'test', data_id = 99))
     # db.registir(id=1, name="sher2", lang='ru', admin = False)
     
     # print(db.admins)

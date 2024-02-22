@@ -42,7 +42,9 @@ async def main_function(update : types.CallbackQuery, state : FSMContext):
             
                 if function == 'get_video':
                     params = request[1].split('&')
-                    print(params)
+                    id, resolution = params[0], params[1]
+                    
+                    
                 
                 elif function == 'get_music':
                     id = request[1]
@@ -54,48 +56,8 @@ async def main_function(update : types.CallbackQuery, state : FSMContext):
                     else:
                         if db.is_user_downloanding(update.from_user.id):
                             db.close_user_downlonding(update.from_user.id)
-                            
-                            # queues.add_music_queue(9)
-                            queues.add_music_queue(update.from_user.id)
-                            
-                            
-                            for n in range(queues.attemp_count):
-                                print(n)
-                                if queues.is_music_queue(update.from_user.id):
-                                    yt = YouTube(f"https://www.youtube.com/watch?v={id}", use_oauth = True)
-                                    title = slugify(yt.title)
-                        
-                                    status = ytb.download_music(yt, title = title)
-                                
-                                
-                        
-                                    if status:
-                                        data = await bot.send_audio(chat_id = db.data['data_chanel'], audio = open(f'data/{title}.mp3', 'rb'), caption = yt.title)
-                            
-                                        await bot.copy_message(chat_id = update.from_user.id, from_chat_id = db.data['data_chanel'], message_id = data.message_id)
-                                        db.add_youtube_music(id = id, data_id = data.message_id)
-                                        remove_file(title+'.mp3')
-                                        break
-                           
-                                    else:
-                                        await bot.send_message(chat_id = update.from_user.id, text = "Musiqani yuklab olib bo'lmadi")
-                                
-                                else:
-                                    # del queues.music_queue[-1]
-                                    await asyncio.sleep(queues.sleep_time)
-
-                            db.open_user_downlonding(update.from_user.id)
-                            queues.remove_music_queue(update.from_user.id)
-                            
+                            queues.set_music_queue(user_id = update.from_user.id, music_id = id)        
                         else:
                             await update.answer("Pleas expet unit you last file downloded", show_alert = True)
                             
                             
-                                
-                
-                            
-                            
-                        # await update.answer("You are not downlonding")
-                        
-                    # else:
-                    #     await update.answer("Pleas expet unit you last video or music downloded")

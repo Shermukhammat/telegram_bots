@@ -168,7 +168,7 @@ class YouTuba:
                 return (resolutions, data, audio_data)
             
     
-    def download_music(self, yt : YouTube, title : str = None) -> bool:
+    async def download_music(self, yt : YouTube, title : str = None) -> bool:
         print("audio downloandig started")
         data = self.get_audio_info(yt.streaming_data)
         if data:
