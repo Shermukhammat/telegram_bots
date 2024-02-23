@@ -6,13 +6,13 @@ class DataBase:
         self.tasks = []
         self.finished_tasks = []
     
-    async def addTask(self, task_type : str = 'type', ytid : str = None, resolution : str = '144p', messageId : int = None) -> bool:
+    async def addTask(self, task_type : str = 'type', ytid : str = None, resolution : str = '144p', messageId : int = None, userId : int = None) -> bool:
         if task_type == 'music':
-            self.tasks.append({'type' : 'music', 'ytid' : ytid, 'messageId' : messageId})
+            self.tasks.append({'type' : 'music', 'ytid' : ytid, 'messageId' : messageId, 'userId' : userId})
             return True
             
         elif task_type == 'video':
-            self.tasks.append({'type' : 'video', 'ytid' : ytid, 'resolution' : resolution, 'messageId' : messageId})
+            self.tasks.append({'type' : 'video', 'ytid' : ytid, 'resolution' : resolution, 'messageId' : messageId, 'userId' : userId})
             return True
     
     async def getTask(self) -> dict:
@@ -20,13 +20,13 @@ class DataBase:
             return self.tasks.pop(0)
         
         
-    async def addFinishedTask(self, task_type : str = 'type', ytid : str = None, resolution : str = '144p', finished : bool = True, dataId : int = None, messageId : int = None) -> bool:
+    async def addFinishedTask(self, task_type : str = 'type', ytid : str = None, resolution : str = '144p', finished : bool = True, dataId : int = None, messageId : int = None, userId : int = None) -> bool:
         if task_type == 'music':
-            self.finished_tasks.append({'type' : 'music', 'ytid' : ytid, 'finished' : finished, 'dataId' : dataId, 'messageId' : messageId})
+            self.finished_tasks.append({'type' : 'music', 'ytid' : ytid, 'finished' : finished, 'dataId' : dataId, 'messageId' : messageId, 'userId' : userId})
             return True
             
         elif task_type == 'video':
-            self.finished_tasks.append({'type' : 'video', 'ytid' : ytid, 'resolution' : resolution, 'finished' : finished, 'dataId' : dataId, 'messageId' : messageId})
+            self.finished_tasks.append({'type' : 'video', 'ytid' : ytid, 'resolution' : resolution, 'finished' : finished, 'dataId' : dataId, 'messageId' : messageId, 'userId' : userId})
             return True
     
     async def getFinishedTask(self) -> dict:

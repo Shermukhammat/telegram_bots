@@ -172,11 +172,13 @@ class YouTuba:
         print("audio downloandig started")
         data = self.get_audio_info(yt.streaming_data)
         if data:
-            stream = yt.streams.get_by_itag(data['itag'])
-            if stream:
-                stream.download(output_path = 'data', filename = f"{title}.mp3")
-                return True
-        
+            try:
+                stream = yt.streams.get_by_itag(data['itag'])
+                if stream:
+                    stream.download(output_path = 'data', filename = f"{title}.mp3")
+                    return True
+            except:
+                return False
             
 
 if __name__ == '__main__':

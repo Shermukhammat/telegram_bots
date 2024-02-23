@@ -1,12 +1,12 @@
 from loader import dp, manager
 from aiogram import executor
 import logging, handlers
-import asyncio
+import asyncio 
 
 
 async def on_startup(dispatcher):
     # await manager.start_music_managing()
-    asyncio.create_task(manager.start_music_managing())
+    asyncio.create_task(manager.start_task_managing())
     # asyncio.create_task(manager.start_video_managing())
      
 

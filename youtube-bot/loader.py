@@ -1,21 +1,22 @@
 from aiogram import Bot, Dispatcher, types
 from aiogram.bot.api import TelegramAPIServer
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-from config import API_TOKEN
+from config import API_TOKEN, DATA_CHANEL
 from data.base import DataBase
 from utilits.context import ConText
 from utilits.buttons import Buttons, Inline
 from utilits.states import States
-from downloader.manager import Manager
+from downloader.manager import FinishedTaskManger
+from downloader.helpers import Tasks
 from youtuba.base import YouTuba
-from utilits.queue import Queue
+# from utilits.queue import Queue
 
 
-local_server = TelegramAPIServer.from_base('http://127.0.0.1:8081')
+# local_server = TelegramAPIServer.from_base('http://127.0.0.1:8081')http://127.1.1.1:7070
 storage = MemoryStorage()
 
 
-bot = Bot(token = API_TOKEN, server = local_server)
+bot = Bot(token = API_TOKEN)
 dp = Dispatcher(bot, storage = storage)
 
 db = DataBase()
@@ -25,8 +26,9 @@ inline = Inline()
 
 states = States()
 ytb = YouTuba(downloanding_limit = 1_500)
-queues = Queue()
-manager = Manager(dp = dp, bot = bot, queues = queues, ytb = ytb, db = db)
+# queues = Queue()
+manager = FinishedTaskManger(bot, db = db, data_chanel = DATA_CHANEL)
+tasks = Tasks(api_url = "http://127.1.1.1:7070")
 
 
 

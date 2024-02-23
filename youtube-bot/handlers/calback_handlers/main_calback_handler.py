@@ -1,4 +1,4 @@
-from loader import db, dp, bot, types, states, context, queues, ytb
+from loader import db, dp, bot, types, states, context, ytb, tasks
 from aiogram.dispatcher import FSMContext
 import time
 import asyncio
@@ -12,7 +12,7 @@ def remove_file(file_name : str, directory : str = 'data'):
         os.remove(f"{directory}/{file_name}")
 
 
-def slugify(value, allow_unicode=False):
+def slugify(value, allow_unicode = False):
     """
     Taken from https://github.com/django/django/blob/master/django/utils/text.py
     Convert to ASCII if 'allow_unicode' is False. Convert spaces or repeated
@@ -54,10 +54,16 @@ async def main_function(update : types.CallbackQuery, state : FSMContext):
                         await bot.copy_message(chat_id = update.from_user.id, from_chat_id = db.data['data_chanel'], message_id = data_id)
                     
                     else:
-                        if db.is_user_downloanding(update.from_user.id):
-                            db.close_user_downlonding(update.from_user.id)
-                            queues.set_music_queue(user_id = update.from_user.id, music_id = id)        
-                        else:
-                            await update.answer("Pleas expet unit you last file downloded", show_alert = True)
+                        # print("working")
+                        # data = await bot.edit_message_media(chat_id = update.from_user.id, message_id = update.message.message_id, 
+                        #                              media = types.InputTextMessageContent("Yuklnmoqda ...")) 
+                        
+                        tasks.addMusicTask(ytid = id, userId = update.from_user.id, messageId = update.message.message_id)
+                        
+                        # if db.is_user_downloanding(update.from_user.id):
+                        #     db.close_user_downlonding(update.from_user.id)
+                        #     queues.set_music_queue(user_id = update.from_user.id, music_id = id)        
+                        # else:
+                        #     await update.answer("Pleas expet unit you last file downloded", show_alert = True)
                             
                             

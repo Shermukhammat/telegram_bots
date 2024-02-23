@@ -1,4 +1,4 @@
-from loader import dp, db, types, context, buttons, inline, queues
+from loader import dp, db, types, context, buttons, inline
 from aiogram.dispatcher import FSMContext
 
 
