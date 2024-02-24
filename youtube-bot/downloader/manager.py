@@ -1,5 +1,5 @@
 # from utilits.queue import Queue
-from aiogram import Bot, Dispatcher
+from aiogram import Bot, Dispatcher, types
 import asyncio
 from pytube import YouTube
 from youtuba.base import YouTuba
@@ -15,28 +15,24 @@ class Manager:
                 long_sleep : int = 15, 
                 api_url : str = "http://127.1.1.1:7070", 
                 downloanding_limit : int = 1_500,
-                data_chanel : str = None):
+                data_chanel : str = None,
+                db : DataBase = None):
         
         self.sleep = sleep_time 
-        self.long_sleep = long_sleep
+        self.long_sleep = long_sleep 
         self.api_url = api_url 
         self.ytb = YouTuba(downloanding_limit = downloanding_limit)
         self.bot = bot 
-        self.data_chanel = data_chanel
-        # self.dp = dp
+        self.data_chanel = data_chanel 
+        self.db = db
         # self.bot = bot 
         # self.ytb = ytb
     
-    async def start_task_managing(self):    
-        n = 0
+    async def start_task_managing(self):  
         while True:
-            n+=1
-            print(n)
-            
-            data = self.get_task(self.api_url)
+            data = await self.get_task(self.api_url)
             
             if data and data.get('status'):
-                # print(data)
                 if data.get('type') == 'music':
                     print(data)
                     await self.music_task(data)
@@ -50,47 +46,57 @@ class Manager:
             else:
                 await asyncio.sleep(self.sleep)
         
-                
+    
+    def get_youtube(self, ytid : int):
+        try:
+            yt = YouTube(url = f"https://www.youtube.com/watch?v={ytid}", use_oauth = True)
+            yt.check_availability()
+            
+        except:
+            print("get_youtube: Music doesn't exsit")
+            return
+        return yt
+            
     async def music_task(self, data : dict):
         try:
-            try:
-                yt = YouTube(url = f"https://www.youtube.com/watch?v={data['ytid']}", use_oauth = True)
-                yt.check_availability()
-            except:
-                requests.get(f"{self.api_url}/addFinishedMusicTask?ytid={data['ytid']}&finished=False&messageId={data['messageId']}")
-                print("Music doesn't exsit")
-                return
-            
-            title = slugify(yt.title)
-            if await self.ytb.download_music(yt, title = title):
-                message_data = await self.bot.send_audio(chat_id = self.data_chanel, audio = open('data/'+title+'.mp3', 'rb'), caption = yt.title)
+            yt = self.get_youtube(data['ytid'])
+            if yt:
+                title = slugify(yt.title)
+                if await self.ytb.download_music(yt, title = title):
+                    message_data = await self.bot.send_audio(chat_id = self.data_chanel, audio = open('data/'+title+'.mp3', 'rb'), caption = yt.title)
                 
-                response = requests.get(f"{self.api_url}/addFinishedMusicTask?ytid={data['ytid']}&finished=True&dataId={message_data.message_id}&messageId={data['messageId']}&userId={data['userId']}")
-                print(response)
-                remove_file(title+'.mp3')
-                print("Sucsess")
+                    self.callApiFinishedMusic(data, status = True, dataId = message_data.message_id)
+                    remove_file(title+'.mp3')
+                    print("Sucsess")
                 
+                else:
+                    self.callApiFinishedMusic(data, status = False)
+                    remove_file(title+'.mp3')
+                    print("Can't download music")
             else:
-                requests.get(f"{self.api_url}/addFinishedMusicTask?ytid={data['ytid']}&finished=False&messageId={data['messageId']}")
-                remove_file(title+'.mp3')
-                print("Can't download music")
+                self.callApiFinishedMusic(data, status = False)
                             
         except Exception as a:
-            requests.get(f"{self.api_url}/addFinishedMusicTask?ytid={data['ytid']}&finished=False&messageId={data['messageId']}")
-            print("music doesn't exsit")
+            self.callApiFinishedMusic(data, status = False)
+            print("music_task: music doesn't exsit")
             print(a)
+            
+
+    def callApiFinishedMusic(self, data : dict, status : bool = False, dataId : int = None):
+        requests.get(f"{self.api_url}/addFinishedMusicTask?ytid={data['ytid']}&finished={status}&messageId={data['messageId']}&userId={data['userId']}&dataId={dataId}")
     
     
-    def get_task(self, api_url : str) -> dict:
+    async def get_task(self, api_url : str) -> dict:
         try:
             respons = requests.get(f"{api_url}/getTask")
 
         except requests.exceptions.ConnectionError:
-            print("API doesn't answer")
+            print("get_task: API doesn't answer ConnectionError")
+            await asyncio.sleep(self.long_sleep)
             return
             
         except:
-            print("Somthing went wrong with API")
+            print("get_task: Somthing went wrong with API")
             return 
         
         if respons.status_code == 200:
@@ -118,43 +124,42 @@ class FinishedTaskManger:
         self.long_sleep = long_sleep_time
         self.sleep = sleep_time
         self.data_chanel = data_chanel
+        self.db = db
     
     async def start_task_managing(self):
-        await asyncio.sleep(0.1)
-        n = 0
         while True:
-            # n+=1
-            # print(n)
-            
-            task = self.getFinishedTask(self.api_url)
+            task = await self.getFinishedTask()
             if task and task.get('status'):
                 if task.get('type') == 'music':
+                    await self.ComplateMusicTask(task)
                     print(task)
-                    if task['finished']:
-                        pass
-                        await self.bot.copy_message(from_chat_id = self.data_chanel, chat_id = task['userId'], message_id = task['dataId'])
-                    else:
-                        pass
                          
                 elif task.get('type') == 'video':
                     print(task)
-                
+    
                 else:
                     await asyncio.sleep(self.sleep)
             
             else:
                 await asyncio.sleep(self.sleep)
+                
+    async def ComplateMusicTask(self, task : dict):
+        if task['finished']:
+            await self.bot.copy_message(from_chat_id = self.data_chanel, chat_id = task['userId'], message_id = task['dataId'])
+            # self.d//
+        else:
+            await self.bot.send_message(chat_id = task['userId'], text = "Musiqani yuklab olib bo'lmadi")
             
 
     
     
-    def getFinishedTask(self, api_url : str) -> dict:
+    async def getFinishedTask(self) -> dict:
         try:
-            respons = requests.get(f"{api_url}/getFinishedTask")
+            respons = requests.get(f"{self.api_url}/getFinishedTask")
 
         except requests.exceptions.ConnectionError:
-            print("API doesn't answer")
-            return
+            print("getFinishedTask: API doesn't answer ConnectionError")
+            await asyncio.sleep(self.long_sleep)
             
         except:
             print("Somthing went wrong with API")
