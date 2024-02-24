@@ -8,7 +8,7 @@ local_server = TelegramAPIServer.from_base('http://127.0.0.1:8081')
 
 bot = Bot(API_TOKEN, server = local_server)
 dp = Dispatcher(bot)
-manager = Manager(bot, data_chanel = DATA_CHANEL, downloanding_limit = 1_500, sleep_time = 3)
+manager = Manager(bot, data_chanel = DATA_CHANEL, downloanding_limit = 1_500, sleep_time = 1)
 
 
 # async def on_startup(dispatcher):
