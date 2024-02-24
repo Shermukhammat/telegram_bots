@@ -146,7 +146,7 @@ class FinishedTaskManger:
     async def ComplateMusicTask(self, task : dict):
         if task['finished']:
             await self.bot.copy_message(from_chat_id = self.data_chanel, chat_id = task['userId'], message_id = task['dataId'])
-            # self.d//
+            # self.db.add_youtube_music(id = task['ytid'], data_id = task['dataId'])
         else:
             await self.bot.send_message(chat_id = task['userId'], text = "Musiqani yuklab olib bo'lmadi")
             
